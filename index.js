@@ -1,10 +1,9 @@
 const express = require('express');
 const { existsSync, mkdirSync } = require('fs');
-const { mkdirpSync } = require('mkdirp');
-const os = require('os');
-const { basename, join, relative, dirname, resolve } = require('path');
-const sharp = require('sharp');
 const { getAllFilesSync } = require('get-all-files');
+const os = require('os');
+const { dirname, join, relative } = require('path');
+const sharp = require('sharp');
 
 require('dotenv').config();
 
@@ -51,8 +50,8 @@ generateThumbs();
 
 const app = express();
 app.use(express.static('public'));
-app.use('/images', express.static(dir));
-app.use('/thumbs', express.static(tmp));
+app.use('/images', express.static(dir, { maxAge: 60 * 60 * 1000 }));
+app.use('/thumbs', express.static(tmp, { maxAge: 60 * 60 * 1000 }));
 
 app.get('/imageList', (req, res) => {
   generateThumbs().then(() => {
