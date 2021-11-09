@@ -1,0 +1,29 @@
+{
+  "name": "simple-image-server",
+  "version": "1.0.0",
+  "description": "A small server that hosts images (similar to simplehttpserver)",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amcolash/simple-image-server.git"
+  },
+  "author": "Andrew McOlash",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/amcolash/simple-image-server/issues"
+  },
+  "homepage": "https://github.com/amcolash/simple-image-server#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "get-all-files": "^4.1.0",
+    "mkdirp": "^1.0.4",
+    "sharp": "^0.29.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14"
+  }
+}
