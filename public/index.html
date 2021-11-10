@@ -6,10 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simple Image Server</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+    </style>
+    <script src="https://unpkg.com/@iconfu/svg-inject@1.2.3/dist/svg-inject.min.js"></script>
   </head>
   <body>
     <div class="root"></div>
-    <div class="modal"><img /></div>
+    <div class="modal"><img src="x.svg" class="close" onload="SVGInject(this)" /><img class="image" /></div>
     <script src="index.js"></script>
   </body>
 </html>

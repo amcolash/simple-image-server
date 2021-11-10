@@ -7,7 +7,7 @@ const sharp = require('sharp');
 
 require('dotenv').config();
 
-const dir = process.env.DIR || '/home/amcolash/Desktop/test/';
+const dir = process.env.DIR || './test/';
 const port = process.env.PORT || 3000;
 const tmp = join(os.tmpdir(), 'simple-image-server');
 
@@ -59,7 +59,7 @@ app.get('/imageList', (req, res) => {
       .toArray()
       .map((f) => {
         const rel = relative(dir, f);
-        return { file: join('/images/', rel), thumb: join('/thumbs/', rel) };
+        return { file: join('/images/', rel), thumb: join('/thumbs/', rel), dir: dirname(rel) };
       });
 
     res.json(images);

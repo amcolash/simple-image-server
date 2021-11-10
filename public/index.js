@@ -1,8 +1,9 @@
 const server = window.location.origin;
+let currentDir = '.';
 
 function init() {
   updateImages();
-  setInterval(updateImages, 60 * 1000);
+  setInterval(updateImages, 2 * 60 * 1000);
 
   document.addEventListener('keydown', (e) => {
     switch (e.key) {
@@ -28,15 +29,64 @@ function updateImages() {
     fetch(`${server}/imageList`)
       .then((response) => response.json())
       .then((res) => {
-        res.forEach((f) => {
-          const img = document.createElement('img');
-          img.src = f.thumb;
-          img.onclick = () => showModal(f.file);
+        const dirs = new Set();
+        const images = [];
 
-          root.appendChild(img);
+        res.forEach((f) => {
+          if (f.dir === currentDir) {
+            images.push(f);
+          } else if (currentDir === '.') {
+            dirs.add(f.dir);
+          }
+        });
+
+        if (currentDir !== '.') {
+          createDir('.');
+        }
+
+        Array.from(dirs)
+          .sort()
+          .forEach((d) => {
+            createDir(d);
+          });
+
+        images.forEach((i) => {
+          createImage(i);
         });
       });
   }
+}
+
+function createImage(i) {
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.onclick = () => showModal(i.file);
+
+  const img = document.createElement('img');
+  div.appendChild(img);
+  img.src = i.thumb;
+
+  const root = document.querySelector('.root');
+  root.appendChild(div);
+}
+
+function createDir(d) {
+  const div = document.createElement('div');
+  div.className = 'card';
+
+  const img = document.createElement('img');
+  img.src = 'folder.svg';
+  div.appendChild(img);
+  div.onclick = () => selectDir(d);
+
+  const dir = document.createElement('div');
+  dir.innerText = d === '.' ? '../' : d + '/';
+  div.appendChild(dir);
+
+  const root = document.querySelector('.root');
+  root.appendChild(div);
+
+  SVGInject(img);
 }
 
 function showModal(url) {
@@ -44,15 +94,24 @@ function showModal(url) {
   modal.style.opacity = '1';
   modal.style.pointerEvents = 'unset';
 
-  const modalImage = document.querySelector('.modal img');
+  const modalImage = document.querySelector('.modal .image');
   modalImage.src = '';
   modalImage.src = url;
+
+  document.body.style.overflow = 'hidden';
 }
 
 function hideModal() {
   const modal = document.querySelector('.modal');
   modal.style.opacity = '0';
   modal.style.pointerEvents = 'none';
+
+  document.body.style.overflow = 'unset';
 }
 
-init();
+function selectDir(d) {
+  currentDir = d;
+  updateImages();
+}
+
+window.onload = init;
