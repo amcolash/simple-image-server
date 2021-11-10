@@ -70,6 +70,28 @@ body {
   cursor: pointer;
 }
 
+.modal .spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+
+  width: 60px;
+  height: 60px;
+  color: white;
+
+  animation: 2s linear 0s infinite running spin;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media only screen and (max-width: 700px) {
   .card {
     width: 130px;
