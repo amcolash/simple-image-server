@@ -39,19 +39,28 @@ function updateImages() {
         res.forEach((f) => {
           if (f.dir === currentDir) {
             images.push(f);
-          } else if (currentDir === '.') {
+          } else if (
+            ((currentDir === '.' && f.dir.split('/').length === 1) ||
+              (f.dir.startsWith(currentDir) && f.dir.replace(currentDir, '').split('/').length === 2)) &&
+            f.dir !== '.'
+          ) {
             dirs.add(f.dir);
           }
         });
 
         if (currentDir !== '.') {
-          createDir('.');
+          const sections = currentDir.split('/');
+          if (sections.length == 1) createDir('.', '../');
+          else {
+            sections.pop();
+            createDir(sections.join('/'), '../');
+          }
         }
 
         Array.from(dirs)
           .sort((a, b) => a.localeCompare(b))
           .forEach((d) => {
-            createDir(d);
+            createDir(d, d.replace(currentDir + '/', ''));
           });
 
         images
@@ -76,7 +85,7 @@ function createImage(i) {
   root.appendChild(div);
 }
 
-function createDir(d) {
+function createDir(d, label) {
   const div = document.createElement('div');
   div.className = 'card';
 
@@ -86,7 +95,7 @@ function createDir(d) {
   div.onclick = () => selectDir(d);
 
   const dir = document.createElement('div');
-  dir.innerText = d === '.' ? '../' : d + '/';
+  dir.innerText = label || d;
   div.appendChild(dir);
 
   const root = document.querySelector('.root');
