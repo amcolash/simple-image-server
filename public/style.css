@@ -44,9 +44,10 @@ body {
 .modal {
   display: flex;
   justify-content: center;
-
   width: calc(100% - 60px);
   height: calc(100% - 60px);
+
+  z-index: 1;
   position: fixed;
   top: 0;
   left: 0;
@@ -67,6 +68,9 @@ body {
   position: absolute;
   top: 30px;
   right: 30px;
+
+  color: white;
+
   cursor: pointer;
 }
 
@@ -81,6 +85,29 @@ body {
   color: white;
 
   animation: 2s linear 0s infinite running spin;
+}
+
+.refresh {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+
+  padding: 12px;
+  border-radius: 100%;
+
+  color: white;
+  background: #7cf;
+
+  cursor: pointer;
+}
+
+.refresh svg {
+  width: 30px;
+  height: 30px;
 }
 
 @keyframes spin {
