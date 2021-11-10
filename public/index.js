@@ -1,9 +1,10 @@
 const server = window.location.origin;
 let currentDir = '.';
 
+let timer;
+
 function init() {
   updateImages();
-  setInterval(updateImages, 2 * 60 * 1000);
 
   document.addEventListener('keydown', (e) => {
     switch (e.key) {
@@ -20,6 +21,9 @@ function init() {
 }
 
 function updateImages() {
+  clearInterval(timer);
+  timer = setInterval(updateImages, 2 * 60 * 1000);
+
   const modal = document.querySelector('.modal');
 
   if (modal.style.opacity !== '1') {
