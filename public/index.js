@@ -49,14 +49,16 @@ function updateImages() {
         }
 
         Array.from(dirs)
-          .sort()
+          .sort((a, b) => a.localeCompare(b))
           .forEach((d) => {
             createDir(d);
           });
 
-        images.forEach((i) => {
-          createImage(i);
-        });
+        images
+          .sort((a, b) => a.file.localeCompare(b.file))
+          .forEach((i) => {
+            createImage(i);
+          });
       });
   }
 }

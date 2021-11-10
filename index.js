@@ -7,7 +7,7 @@ const sharp = require('sharp');
 
 require('dotenv').config();
 
-const dir = process.env.DIR || './test/';
+const dir = process.env.DIR || '/home/amcolash/Pictures';
 const port = process.env.PORT || 3000;
 const tmp = join(os.tmpdir(), 'simple-image-server');
 
@@ -17,18 +17,16 @@ if (!existsSync(tmp)) mkdirSync(tmp);
 function generateThumbs() {
   const promises = [];
 
-  getAllFilesSync(dir)
-    .toArray()
-    .forEach((f) => {
-      const thumbFile = getThumbName(f);
+  getFiles().forEach((f) => {
+    const thumbFile = getThumbName(f);
 
-      if (!existsSync(thumbFile)) {
-        console.log(`Generating thumbnail for ${f}: ${thumbFile}`);
-        mkdirSync(dirname(thumbFile), { recursive: true });
+    if (!existsSync(thumbFile)) {
+      console.log(`Generating thumbnail for ${f}: ${thumbFile}`);
+      mkdirSync(dirname(thumbFile), { recursive: true });
 
-        promises.push(sharp(f).resize(300).jpeg().toFile(thumbFile));
-      }
-    });
+      promises.push(sharp(f).resize(300).jpeg().toFile(thumbFile));
+    }
+  });
 
   return Promise.all(promises)
     .then(() => {
@@ -46,6 +44,15 @@ function getThumbName(f) {
   return thumbFile;
 }
 
+function getFiles() {
+  return getAllFilesSync(dir)
+    .toArray()
+    .filter((f) => {
+      const l = f.toLowerCase();
+      return l.endsWith('.jpg') || l.endsWith('.jpeg') || l.endsWith('.png') || l.endsWith('.bmp');
+    });
+}
+
 generateThumbs();
 
 const app = express();
@@ -55,12 +62,10 @@ app.use('/thumbs', express.static(tmp, { maxAge: 60 * 60 * 1000 }));
 
 app.get('/imageList', (req, res) => {
   generateThumbs().then(() => {
-    const images = getAllFilesSync(dir)
-      .toArray()
-      .map((f) => {
-        const rel = relative(dir, f);
-        return { file: join('/images/', rel), thumb: join('/thumbs/', rel), dir: dirname(rel) };
-      });
+    const images = getFiles().map((f) => {
+      const rel = relative(dir, f);
+      return { file: join('/images/', rel), thumb: join('/thumbs/', rel), dir: dirname(rel) };
+    });
 
     res.json(images);
   });
