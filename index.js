@@ -4,7 +4,7 @@ const express = require('express');
 const { existsSync, mkdirSync } = require('fs');
 const { getAllFilesSync } = require('get-all-files');
 const os = require('os');
-const { dirname, join, relative } = require('path');
+const { dirname, join, relative, resolve } = require('path');
 const sharp = require('sharp');
 
 const argv = require('yargs')
@@ -16,12 +16,22 @@ const argv = require('yargs')
   .help('h')
   .alias('h', 'help').argv;
 
-const dir = argv._[0];
 const port = argv.p || 8000;
 const tmp = join(os.tmpdir(), 'simple-image-server');
 
-// Check that the folder exists
-existsSync(dir);
+let dir = argv._[0];
+
+try {
+  // Fix home dir paths and resolve path
+  if (dir.startsWith('~')) dir = dir.replace('~', os.homedir());
+  dir = resolve(dir);
+
+  // Check that the folder exists
+  if (!existsSync(dir)) throw '';
+} catch (e) {
+  console.error('Unable to load directory', dir, e);
+  process.exit(1);
+}
 
 // Make tmp dir if it doesn't exist
 if (!existsSync(tmp)) mkdirSync(tmp);
@@ -40,13 +50,9 @@ function generateThumbs() {
     }
   });
 
-  return Promise.all(promises)
-    .then(() => {
-      console.log('All done!');
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  return Promise.all(promises).catch((err) => {
+    console.error(err);
+  });
 }
 
 function getThumbName(f) {
@@ -82,6 +88,8 @@ app.get('/imageList', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}, serving ${dir}`);
+  console.log(`Serving images in ${dir}`);
+  console.log(`Server listening at http://localhost:${port}`);
+
   generateThumbs();
 });
