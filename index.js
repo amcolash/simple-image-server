@@ -1,15 +1,28 @@
+#!/usr/bin/env node
+
 const express = require('express');
 const { existsSync, mkdirSync } = require('fs');
 const { getAllFilesSync } = require('get-all-files');
 const os = require('os');
 const { dirname, join, relative } = require('path');
 const sharp = require('sharp');
+const yargs = require('yargs');
 
-require('dotenv').config();
+const argv = require('yargs')
+  .usage('Usage: $0 [options] <folder>')
+  .alias('p', 'port')
+  .nargs('p', 1)
+  .describe('p', 'Specify a port')
+  .demand(1)
+  .help('h')
+  .alias('h', 'help').argv;
 
-const dir = process.env.DIR || '/home/amcolash/Pictures';
-const port = process.env.PORT || 3000;
+const dir = argv._[0];
+const port = argv.p || 8000;
 const tmp = join(os.tmpdir(), 'simple-image-server');
+
+// Check that the folder exists
+existsSync(dir);
 
 // Make tmp dir if it doesn't exist
 if (!existsSync(tmp)) mkdirSync(tmp);
@@ -53,8 +66,6 @@ function getFiles() {
     });
 }
 
-generateThumbs();
-
 const app = express();
 app.use(express.static('public'));
 app.use('/images', express.static(dir, { maxAge: 60 * 60 * 1000 }));
@@ -72,5 +83,7 @@ app.get('/imageList', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Server listening at http://localhost:${port}, serving ${dir}`);
 });
+
+generateThumbs();
