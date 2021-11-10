@@ -27,12 +27,12 @@ function updateImages() {
   const modal = document.querySelector('.modal');
 
   if (modal.style.opacity !== '1') {
-    const root = document.querySelector('.root');
-    root.replaceChildren();
-
     fetch(`${server}/imageList`)
       .then((response) => response.json())
       .then((res) => {
+        const root = document.querySelector('.root');
+        root.replaceChildren();
+
         const dirs = new Set();
         const images = [];
 
