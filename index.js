@@ -6,7 +6,6 @@ const { getAllFilesSync } = require('get-all-files');
 const os = require('os');
 const { dirname, join, relative } = require('path');
 const sharp = require('sharp');
-const yargs = require('yargs');
 
 const argv = require('yargs')
   .usage('Usage: $0 [options] <folder>')
@@ -67,7 +66,7 @@ function getFiles() {
 }
 
 const app = express();
-app.use(express.static('public'));
+app.use(express.static(join(__dirname, 'public')));
 app.use('/images', express.static(dir, { maxAge: 60 * 60 * 1000 }));
 app.use('/thumbs', express.static(tmp, { maxAge: 60 * 60 * 1000 }));
 
@@ -84,6 +83,5 @@ app.get('/imageList', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}, serving ${dir}`);
+  generateThumbs();
 });
-
-generateThumbs();
