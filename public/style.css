@@ -44,14 +44,14 @@ body {
 .modal {
   display: flex;
   justify-content: center;
-  width: calc(100% - 60px);
-  height: calc(100% - 60px);
+  width: calc(100% - 140px);
+  height: calc(100% - 140px);
 
   z-index: 1;
   position: fixed;
   top: 0;
   left: 0;
-  padding: 30px;
+  padding: 70px;
 
   background: rgba(0, 0, 0, 0.95);
   opacity: 0;
@@ -64,14 +64,16 @@ body {
   object-fit: contain;
 }
 
-.modal .close {
+.modal .icon {
   position: absolute;
-  top: 30px;
-  right: 30px;
-
   color: white;
-
   cursor: pointer;
+  padding: 15px;
+}
+
+.modal .close {
+  top: 16px;
+  right: 16px;
 }
 
 .modal .spinner {
@@ -85,6 +87,16 @@ body {
   color: white;
 
   animation: 2s linear 0s infinite running spin;
+}
+
+.modal .left {
+  top: 50%;
+  left: 16px;
+}
+
+.modal .right {
+  top: 50%;
+  right: 16px;
 }
 
 .refresh {

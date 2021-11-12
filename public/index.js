@@ -1,5 +1,7 @@
 const server = window.location.origin;
 let currentDir = '.';
+let currentImages = [];
+let currentIndex = 0;
 
 let timer;
 
@@ -11,6 +13,12 @@ function init() {
       case 'Escape':
         hideModal();
         break;
+      case 'ArrowRight':
+        next();
+        break;
+      case 'ArrowLeft':
+        previous();
+        break;
       default:
         break;
     }
@@ -18,6 +26,12 @@ function init() {
 
   const modal = document.querySelector('.modal');
   modal.addEventListener('click', hideModal);
+
+  const left = document.querySelector('.left');
+  left.addEventListener('click', previous);
+
+  const right = document.querySelector('.right');
+  right.addEventListener('click', next);
 }
 
 function updateImages() {
@@ -48,6 +62,8 @@ function updateImages() {
           }
         });
 
+        currentImages = images;
+
         if (currentDir !== '.') {
           const sections = currentDir.split('/');
           if (sections.length == 1) createDir('.', '../');
@@ -65,21 +81,24 @@ function updateImages() {
 
         images
           .sort((a, b) => a.file.localeCompare(b.file))
-          .forEach((i) => {
-            createImage(i);
+          .forEach((img, i) => {
+            createImage(img, i);
           });
       });
   }
 }
 
-function createImage(i) {
+function createImage(img, i) {
   const div = document.createElement('div');
   div.className = 'card';
-  div.onclick = () => showModal(i.file);
+  div.onclick = () => {
+    currentIndex = i;
+    showModal();
+  };
 
-  const img = document.createElement('img');
-  div.appendChild(img);
-  img.src = i.thumb;
+  const imgEl = document.createElement('img');
+  div.appendChild(imgEl);
+  imgEl.src = img.thumb;
 
   const root = document.querySelector('.root');
   root.appendChild(div);
@@ -90,7 +109,7 @@ function createDir(d, label) {
   div.className = 'card';
 
   const img = document.createElement('img');
-  img.src = 'folder.svg';
+  img.src = 'img/folder.svg';
   div.appendChild(img);
   div.onclick = () => selectDir(d);
 
@@ -104,14 +123,14 @@ function createDir(d, label) {
   SVGInject(img);
 }
 
-function showModal(url) {
+function showModal() {
   const modal = document.querySelector('.modal');
   modal.style.opacity = '1';
   modal.style.pointerEvents = 'unset';
 
   const modalImage = document.querySelector('.modal .image');
   modalImage.src = '';
-  modalImage.src = url;
+  modalImage.src = modalImage.src = currentImages[currentIndex].file;
 
   document.body.style.overflow = 'hidden';
 }
@@ -127,6 +146,23 @@ function hideModal() {
 function selectDir(d) {
   currentDir = d;
   updateImages();
+}
+
+function previous(e) {
+  if (e) e.stopPropagation();
+  currentIndex = mod(currentIndex - 1, currentImages.length);
+  showModal();
+}
+
+function next(e) {
+  if (e) e.stopPropagation();
+  currentIndex = mod(currentIndex + 1, currentImages.length);
+  showModal();
+}
+
+// From https://stackoverflow.com/a/17323608/2303432
+function mod(n, m) {
+  return ((n % m) + m) % m;
 }
 
 window.onload = init;
