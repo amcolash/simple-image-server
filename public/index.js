@@ -25,7 +25,12 @@ function init() {
   });
 
   const modal = document.querySelector('.modal');
-  modal.addEventListener('click', hideModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) hideModal();
+  });
+
+  const close = document.querySelector('.close');
+  close.addEventListener('click', hideModal);
 
   const left = document.querySelector('.left');
   left.addEventListener('click', previous);

@@ -4,6 +4,11 @@ body {
   color: #555;
 }
 
+button {
+  background: none;
+  border: none;
+}
+
 .root {
   display: flex;
   flex-wrap: wrap;

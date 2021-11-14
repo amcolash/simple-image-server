@@ -1,6 +1,6 @@
 {
   "name": "@amcolash/simple-image-server",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A small server that hosts images (similar to simplehttpserver)",
   "main": "index.js",
   "bin": {
@@ -26,6 +26,6 @@
     "yargs": "^17.2.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.14"
+    "nodemon": "^2.0.15"
   }
 }
