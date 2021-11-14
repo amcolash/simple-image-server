@@ -1,13 +1,13 @@
 {
   "name": "@amcolash/simple-image-server",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A small server that hosts images (similar to simplehttpserver)",
   "main": "index.js",
   "bin": {
     "simple-image-server": "./index.js"
   },
   "scripts": {
-    "start": "nodemon index.js test/"
+    "start": "nodemon --exec \"node index.js -w test/\""
   },
   "repository": {
     "type": "git",

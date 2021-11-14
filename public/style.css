@@ -71,13 +71,13 @@ button {
 }
 
 .modal .icon {
-  position: absolute;
   color: white;
   cursor: pointer;
   padding: 15px;
 }
 
-.modal .close {
+.modal .toolbar {
+  position: absolute;
   top: 16px;
   right: 16px;
 }
@@ -96,12 +96,14 @@ button {
 }
 
 .modal .left {
+  position: absolute;
   top: 50%;
   left: 16px;
   transform: translateY(-50%);
 }
 
 .modal .right {
+  position: absolute;
   top: 50%;
   right: 16px;
   transform: translateY(-50%);

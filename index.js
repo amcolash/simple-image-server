@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const express = require('express');
-const { existsSync, mkdirSync } = require('fs');
+const { existsSync, mkdirSync, unlinkSync } = require('fs');
 const { getAllFilesSync } = require('get-all-files');
 const os = require('os');
 const { dirname, join, relative, resolve } = require('path');
@@ -9,14 +9,21 @@ const sharp = require('sharp');
 
 const argv = require('yargs')
   .usage('Usage: $0 [options] <folder>')
+
   .alias('p', 'port')
   .nargs('p', 1)
   .describe('p', 'Specify a port')
+
+  .alias('w', 'write-access')
+  .nargs('w', 0)
+  .describe('w', 'Allow write access to location (take screenshot, delete, move)')
+
   .demand(1)
   .help('h')
   .alias('h', 'help').argv;
 
 const port = argv.p || 8000;
+const write = argv.w || false;
 const tmp = join(os.tmpdir(), 'simple-image-server');
 
 let dir = argv._[0];
@@ -71,24 +78,43 @@ function getFiles() {
     });
 }
 
+function getImages() {
+  return getFiles().map((f) => {
+    const rel = relative(dir, f);
+    return { file: join('/images/', rel), thumb: join('/thumbs/', rel), rel, dir: dirname(rel) };
+  });
+}
+
 const app = express();
+app.use(express.urlencoded({ extended: false }));
 app.use(express.static(join(__dirname, 'public')));
 app.use('/images', express.static(dir, { maxAge: 60 * 60 * 1000 }));
 app.use('/thumbs', express.static(tmp, { maxAge: 60 * 60 * 1000 }));
 
 app.get('/imageList', (req, res) => {
   generateThumbs().then(() => {
-    const images = getFiles().map((f) => {
-      const rel = relative(dir, f);
-      return { file: join('/images/', rel), thumb: join('/thumbs/', rel), dir: dirname(rel) };
-    });
-
-    res.json(images);
+    res.json(getImages());
   });
 });
 
+// Only enable write access if specified by user
+if (write) {
+  app.delete('/image', (req, res) => {
+    const file = join(dir, req.query.path);
+    if (existsSync(file)) {
+      console.log('Removing file', file);
+      unlinkSync(file);
+    } else {
+      console.error('Cannot remove', file);
+    }
+
+    res.json(getImages());
+  });
+}
+
 app.listen(port, () => {
   console.log(`Serving images in ${dir}`);
+  console.log(`Write access is ${write ? 'enabled' : 'disabled'}`);
   console.log(`Server listening at http://localhost:${port}`);
 
   generateThumbs();

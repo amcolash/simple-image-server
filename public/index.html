@@ -14,11 +14,14 @@
   <body>
     <div class="root"></div>
     <div class="modal">
-      <button class="icon close"><img src="img/x.svg" onload="SVGInject(this)" /></button>
+      <div class="toolbar">
+        <button class="icon remove"><img src="img/trash.svg" onload="SVGInject(this)" /></button>
+        <button class="icon close"><img src="img/x.svg" onload="SVGInject(this)" /></button>
+      </div>
       <button class="icon left"><img src="img/arrow-left.svg" onload="SVGInject(this)" /></button>
       <button class="icon right"><img src="img/arrow-right.svg" onload="SVGInject(this)" /></button>
       <img class="spinner" src="img/rotate-cw.svg" onload="SVGInject(this)" />
-      <div style="max-width: calc(100vw - 8em)">
+      <div style="max-width: calc(100vw - 8em); max-height: calc(100vh - 6em); display: flex">
         <img class="image" />
       </div>
     </div>
