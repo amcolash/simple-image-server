@@ -18,11 +18,14 @@
       <button class="icon left"><img src="img/arrow-left.svg" onload="SVGInject(this)" /></button>
       <button class="icon right"><img src="img/arrow-right.svg" onload="SVGInject(this)" /></button>
       <img class="spinner" src="img/rotate-cw.svg" onload="SVGInject(this)" />
-      <img class="image" />
+      <div style="max-width: calc(100vw - 8em)">
+        <img class="image" />
+      </div>
     </div>
     <div class="refresh" onclick="updateImages()">
       <img src="img/refresh-cw.svg" onload="SVGInject(this)" />
     </div>
+    <script src="swiped-events.min.js"></script>
     <script src="index.js"></script>
   </body>
 </html>

@@ -29,6 +29,10 @@ function init() {
     if (e.target === modal) hideModal();
   });
 
+  const modalImage = document.querySelector('.modal .image');
+  modalImage.addEventListener('swiped-right', previous);
+  modalImage.addEventListener('swiped-left', next);
+
   const close = document.querySelector('.close');
   close.addEventListener('click', hideModal);
 

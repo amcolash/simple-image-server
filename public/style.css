@@ -48,6 +48,7 @@ button {
 
 .modal {
   display: flex;
+  align-items: center;
   justify-content: center;
   width: calc(100% - 140px);
   height: calc(100% - 140px);
@@ -97,11 +98,13 @@ button {
 .modal .left {
   top: 50%;
   left: 16px;
+  transform: translateY(-50%);
 }
 
 .modal .right {
   top: 50%;
   right: 16px;
+  transform: translateY(-50%);
 }
 
 .refresh {
