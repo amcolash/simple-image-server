@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 const express = require('express');
-const { existsSync, mkdirSync, unlinkSync } = require('fs');
+const { existsSync, mkdirSync, statSync, unlinkSync, writeFileSync } = require('fs');
 const { getAllFilesSync } = require('get-all-files');
 const os = require('os');
-const { dirname, join, relative, resolve } = require('path');
+const { dirname, join, relative, resolve, sep } = require('path');
+const screenshot = require('screenshot-desktop');
 const sharp = require('sharp');
 
 const argv = require('yargs')
@@ -81,7 +82,7 @@ function getFiles() {
 function getImages() {
   return getFiles().map((f) => {
     const rel = relative(dir, f);
-    return { file: join('/images/', rel), thumb: join('/thumbs/', rel), rel, dir: dirname(rel) };
+    return { file: join('/images/', rel), thumb: join('/thumbs/', rel), rel, dir: dirname(rel), created: statSync(f).birthtime };
   });
 }
 
@@ -101,14 +102,42 @@ app.get('/imageList', (req, res) => {
 if (write) {
   app.delete('/image', (req, res) => {
     const file = join(dir, req.query.path);
-    if (existsSync(file)) {
-      console.log('Removing file', file);
-      unlinkSync(file);
-    } else {
-      console.error('Cannot remove', file);
+    const thumbFile = getThumbName(file);
+
+    // Try to prevent deleting outside of folder
+    if (req.query.path.indexOf(`.${sep}`) !== -1) {
+      console.error('Cannot remove relative paths');
+      res.sendStatus(403);
+      return;
     }
 
-    res.json(getImages());
+    try {
+      console.log('Removing file', file);
+      unlinkSync(file);
+
+      console.log('Removing file', thumbFile);
+      unlinkSync(thumbFile);
+      res.json(getImages());
+    } catch (e) {
+      console.error(e);
+      res.sendStatus(500);
+    }
+  });
+
+  app.post('/capture', (req, res) => {
+    const file = join(dir, `Screenshot_${new Date().toISOString()}.png`);
+    console.log('Taking screenshot', file);
+
+    screenshot({ format: 'png' })
+      .then((img) => {
+        writeFileSync(file, img);
+
+        generateThumbs().then(() => res.json(getImages()));
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
+      });
   });
 }
 

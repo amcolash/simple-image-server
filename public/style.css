@@ -109,7 +109,7 @@ button {
   transform: translateY(-50%);
 }
 
-.refresh {
+.capture {
   display: flex;
   align-items: center;
   justify-content: center;

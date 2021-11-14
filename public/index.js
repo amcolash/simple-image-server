@@ -32,18 +32,6 @@ function init() {
   const modalImage = document.querySelector('.modal .image');
   modalImage.addEventListener('swiped-right', previous);
   modalImage.addEventListener('swiped-left', next);
-
-  const remove = document.querySelector('.remove');
-  remove.addEventListener('click', removeImage);
-
-  const close = document.querySelector('.close');
-  close.addEventListener('click', hideModal);
-
-  const left = document.querySelector('.left');
-  left.addEventListener('click', previous);
-
-  const right = document.querySelector('.right');
-  right.addEventListener('click', next);
 }
 
 function updateImages() {
@@ -96,7 +84,7 @@ function parseImages(res) {
     });
 
   images
-    .sort((a, b) => a.file.localeCompare(b.file))
+    .sort((a, b) => new Date(a.created) - new Date(b.created))
     .forEach((img, i) => {
       createImage(img, i);
     });
@@ -166,6 +154,12 @@ function removeImage() {
       .then((response) => response.json())
       .then(parseImages);
   }
+}
+
+function capture() {
+  fetch(`${server}/capture`, { method: 'POST' })
+    .then((response) => response.json())
+    .then(parseImages);
 }
 
 function selectDir(d) {
