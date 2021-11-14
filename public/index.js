@@ -157,9 +157,22 @@ function removeImage() {
 }
 
 function capture() {
+  const captureButton = document.querySelector('.capture');
+  captureButton.style.background = '#eee';
+  captureButton.style.color = '#aaa';
+  captureButton.style.cursor = 'unset';
+  captureButton.disabled = true;
+
   fetch(`${server}/capture`, { method: 'POST' })
     .then((response) => response.json())
-    .then(parseImages);
+    .then((data) => {
+      captureButton.style.background = '';
+      captureButton.style.color = '';
+      captureButton.style.cursor = '';
+      captureButton.disabled = false;
+
+      parseImages(data);
+    });
 }
 
 function selectDir(d) {

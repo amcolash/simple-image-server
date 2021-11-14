@@ -125,6 +125,8 @@ button {
   background: #7cf;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.25);
 
+  transition: all 0.5s;
+
   cursor: pointer;
 }
 
