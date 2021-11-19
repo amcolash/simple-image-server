@@ -14,16 +14,17 @@
   <body>
     <div class="root"></div>
     <div class="modal">
-      <div class="toolbar">
+      <div class="toolbar ui">
         <button class="icon remove" onclick="removeImage()"><img src="img/trash.svg" onload="SVGInject(this)" /></button>
         <button class="icon close" onclick="hideModal()"><img src="img/x.svg" onload="SVGInject(this)" /></button>
       </div>
-      <button class="icon left" onclick="previous()"><img src="img/arrow-left.svg" onload="SVGInject(this)" /></button>
-      <button class="icon right" onclick="next()"><img src="img/arrow-right.svg" onload="SVGInject(this)" /></button>
+      <button class="icon left ui" onclick="previous()"><img src="img/arrow-left.svg" onload="SVGInject(this)" /></button>
+      <button class="icon right ui" onclick="next()"><img src="img/arrow-right.svg" onload="SVGInject(this)" /></button>
       <img class="spinner" src="img/rotate-cw.svg" onload="SVGInject(this)" />
-      <div style="max-width: calc(100vw - 8em); max-height: calc(100vh - 6em); display: flex">
+      <div class="imageContainer">
         <img class="image" />
       </div>
+      <div class="pager ui"></div>
     </div>
     <button class="capture" onclick="capture()">
       <img src="img/camera.svg" onload="SVGInject(this)" />

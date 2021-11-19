@@ -3,7 +3,8 @@ let currentDir = '.';
 let currentImages = [];
 let currentIndex = 0;
 
-let timer;
+let updateTimer;
+let uiTimer;
 
 function init() {
   updateImages();
@@ -24,19 +25,22 @@ function init() {
     }
   });
 
-  const modal = document.querySelector('.modal');
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) hideModal();
-  });
-
   const modalImage = document.querySelector('.modal .image');
   modalImage.addEventListener('swiped-right', previous);
   modalImage.addEventListener('swiped-left', next);
+
+  const modal = document.querySelector('.modal');
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal || e.target === modalImage) {
+      if (uiTimer) hideUI();
+      else showUI();
+    }
+  });
 }
 
 function updateImages() {
-  clearInterval(timer);
-  timer = setInterval(updateImages, 2 * 60 * 1000);
+  clearTimeout(updateTimer);
+  updateTimer = setTimeout(updateImages, 2 * 60 * 1000);
 
   const modal = document.querySelector('.modal');
 
@@ -104,6 +108,17 @@ function createImage(img, i) {
 
   const root = document.querySelector('.root');
   root.appendChild(div);
+
+  const pager = document.querySelector('.pager');
+
+  const pagerImg = document.createElement('img');
+  pagerImg.src = img.thumb;
+  pagerImg.onclick = () => {
+    currentIndex = i;
+    showModal();
+  };
+
+  pager.appendChild(pagerImg);
 }
 
 function createDir(d, label) {
@@ -135,6 +150,15 @@ function showModal() {
   modalImage.src = modalImage.src = currentImages[currentIndex].file;
 
   document.body.style.overflow = 'hidden';
+
+  Array.from(document.querySelectorAll('.modal .pager img')).forEach((e, i) => {
+    if (i === currentIndex) {
+      e.style.outline = '3px solid white';
+      e.scrollIntoView({ behavior: 'smooth' });
+    } else e.style.outlineColor = 'unset';
+  });
+
+  showUI();
 }
 
 function hideModal() {
@@ -143,6 +167,19 @@ function hideModal() {
   modal.style.pointerEvents = 'none';
 
   document.body.style.overflow = 'unset';
+}
+
+function showUI() {
+  if (uiTimer) clearTimeout(uiTimer);
+  uiTimer = setTimeout(hideUI, 5000);
+
+  Array.from(document.querySelectorAll('.ui')).forEach((e) => e.classList.toggle('hidden', false));
+}
+
+function hideUI() {
+  if (uiTimer) clearTimeout(uiTimer);
+  uiTimer = undefined;
+  Array.from(document.querySelectorAll('.ui')).forEach((e) => e.classList.toggle('hidden', true));
 }
 
 function removeImage() {
