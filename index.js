@@ -125,7 +125,15 @@ if (write) {
   });
 
   app.post('/capture', (req, res) => {
-    const file = join(dir, `Screenshot_${new Date().toISOString()}.png`);
+    const d = new Date();
+    const dateString = `${d.getMonth().toString().padStart(2, '0')}_${d.getDate().toString().padStart(2, '0')}_${d.getFullYear()}`;
+    const timeString = `${d.getHours().toString().padStart(2, '0')}_${d.getMinutes().toString().padStart(2, '0')}_${d
+      .getSeconds()
+      .toString()
+      .padStart(2, '0')} ${d.getHours() >= 12 ? 'PM' : 'AM'}`;
+
+    const file = join(dir, `Screenshot ${dateString} ${timeString}.png`);
+
     console.log('Taking screenshot', file);
 
     screenshot({ format: 'png' })
