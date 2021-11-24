@@ -97,14 +97,22 @@ function parseImages(res) {
 function createImage(img, i) {
   const div = document.createElement('div');
   div.className = 'card';
-  div.onclick = () => {
-    currentIndex = i;
-    showModal();
+  div.onclick = (e) => {
+    if (e.target.type !== 'checkbox') {
+      currentIndex = i;
+      showModal();
+    } else {
+      updateCheckboxes();
+    }
   };
 
   const imgEl = document.createElement('img');
   div.appendChild(imgEl);
   imgEl.src = img.thumb;
+
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  div.appendChild(checkbox);
 
   const root = document.querySelector('.root');
   root.appendChild(div);
@@ -210,6 +218,13 @@ function capture() {
 
       parseImages(data);
     });
+}
+
+function updateCheckboxes() {
+  const checked = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]:checked'));
+  const deleteButton = document.querySelector('.bottomButtons .delete');
+
+  deleteButton.style.display = checked.length > 0 ? 'flex' : 'none';
 }
 
 function selectDir(d) {

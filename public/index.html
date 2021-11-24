@@ -26,9 +26,17 @@
       </div>
       <div class="pager ui"></div>
     </div>
-    <button class="capture" onclick="capture()">
-      <img src="img/camera.svg" onload="SVGInject(this)" />
-    </button>
+    <div class="bottomButtons">
+      <!-- <button class="move" onclick="move()">
+        <img src="img/camera.svg" onload="SVGInject(this)" />
+      </button> -->
+      <button class="delete" onclick="deleteSelected()">
+        <img src="img/trash.svg" onload="SVGInject(this)" />
+      </button>
+      <button class="capture" onclick="capture()">
+        <img src="img/camera.svg" onload="SVGInject(this)" />
+      </button>
+    </div>
     <script src="swiped-events.min.js"></script>
     <script src="index.js"></script>
   </body>
