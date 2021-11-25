@@ -55,6 +55,9 @@ function parseImages(res) {
   const root = document.querySelector('.root');
   root.replaceChildren();
 
+  const pager = document.querySelector('.pager');
+  pager.replaceChildren();
+
   const dirs = new Set();
   const images = [];
 
