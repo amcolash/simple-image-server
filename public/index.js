@@ -42,13 +42,7 @@ function updateImages() {
   clearTimeout(updateTimer);
   updateTimer = setTimeout(updateImages, 2 * 60 * 1000);
 
-  const modal = document.querySelector('.modal');
-
-  if (modal.style.opacity !== '1') {
-    fetch(`${server}/imageList`)
-      .then((response) => response.json())
-      .then(parseImages);
-  }
+  handleData(fetch(`${server}/imageList`), parseImages);
 }
 
 function parseImages(res) {
@@ -95,6 +89,8 @@ function parseImages(res) {
     .forEach((img, i) => {
       createImage(img, i);
     });
+
+  updateCheckboxes();
 }
 
 function createImage(img, i) {
@@ -178,6 +174,8 @@ function hideModal() {
   modal.style.pointerEvents = 'none';
 
   document.body.style.overflow = 'unset';
+
+  updateCheckboxes();
 }
 
 function showUI() {
@@ -198,9 +196,47 @@ function removeImage() {
     hideModal();
 
     const img = currentImages[currentIndex];
-    fetch(`${server}/image?path=${img.rel}`, { method: 'DELETE' })
-      .then((response) => response.json())
-      .then(parseImages);
+    handleData(
+      fetch(`${server}/image`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ paths: [img.rel] }),
+      }),
+      parseImages
+    );
+  }
+}
+
+function unselect() {
+  const checked = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]:checked'));
+  checked.forEach((c) => {
+    c.checked = false;
+  });
+
+  updateCheckboxes();
+}
+
+function deleteSelected() {
+  const checkboxes = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]'));
+  const selected = [];
+
+  checkboxes.forEach((c, i) => {
+    if (c.checked) selected.push(currentImages[i].rel);
+  });
+
+  if (confirm(`Are you sure you want to delete ${selected.length} file${selected.length > 1 ? 's' : ''}?`)) {
+    handleData(
+      fetch(`${server}/image`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ paths: selected }),
+      }),
+      parseImages
+    );
   }
 }
 
@@ -211,23 +247,33 @@ function capture() {
   captureButton.style.cursor = 'unset';
   captureButton.disabled = true;
 
-  fetch(`${server}/capture`, { method: 'POST' })
-    .then((response) => response.json())
-    .then((data) => {
-      captureButton.style.background = '';
-      captureButton.style.color = '';
-      captureButton.style.cursor = '';
-      captureButton.disabled = false;
+  handleData(fetch(`${server}/capture`, { method: 'POST' }), (data) => {
+    captureButton.style.background = '';
+    captureButton.style.color = '';
+    captureButton.style.cursor = '';
+    captureButton.disabled = false;
 
-      parseImages(data);
-    });
+    parseImages(data);
+  });
+}
+
+function handleData(promise, handler) {
+  promise
+    .then((response) => {
+      if (response.status === 200) return response.json();
+      throw 'Server Error';
+    })
+    .then(handler)
+    .catch((err) => console.error(err));
 }
 
 function updateCheckboxes() {
   const checked = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]:checked'));
   const deleteButton = document.querySelector('.bottomButtons .delete');
+  const unselectButton = document.querySelector('.bottomButtons .unselect');
 
   deleteButton.style.display = checked.length > 0 ? 'flex' : 'none';
+  unselectButton.style.display = checked.length > 0 ? 'flex' : 'none';
 }
 
 function selectDir(d) {

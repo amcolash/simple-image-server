@@ -1,6 +1,6 @@
 {
   "name": "@amcolash/simple-image-server",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "A small server that hosts images (similar to simplehttpserver)",
   "main": "index.js",
   "bin": {
@@ -23,7 +23,7 @@
     "express": "^4.17.1",
     "get-all-files": "^4.1.0",
     "screenshot-desktop": "^1.12.7",
-    "sharp": "^0.29.2",
+    "sharp": "^0.29.3",
     "yargs": "^17.2.1"
   },
   "devDependencies": {

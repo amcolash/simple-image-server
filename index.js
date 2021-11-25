@@ -87,7 +87,9 @@ function getImages() {
 }
 
 const app = express();
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 app.use(express.static(join(__dirname, 'public')));
 app.use('/images', express.static(dir, { maxAge: 60 * 60 * 1000 }));
 app.use('/thumbs', express.static(tmp, { maxAge: 60 * 60 * 1000 }));
@@ -101,26 +103,46 @@ app.get('/imageList', (req, res) => {
 // Only enable write access if specified by user
 if (write) {
   app.delete('/image', (req, res) => {
-    const file = join(dir, req.query.path);
-    const thumbFile = getThumbName(file);
+    if (req.body.paths && req.body.paths.length > 0) {
+      let hasError = false;
 
-    // Try to prevent deleting outside of folder
-    if (req.query.path.indexOf(`.${sep}`) !== -1) {
-      console.error('Cannot remove relative paths');
-      res.sendStatus(403);
-      return;
-    }
+      req.body.paths.forEach((p) => {
+        // Try to prevent deleting outside of folder
+        if (!hasError && p.indexOf(`.${sep}`) !== -1) {
+          console.error('Cannot remove relative paths', p);
+          hasError = true;
+        }
 
-    try {
-      console.log('Removing file', file);
-      unlinkSync(file);
+        if (!existsSync(join(dir, p))) {
+          console.error('File does not exists', p);
+          hasError = true;
+        }
+      });
 
-      console.log('Removing file', thumbFile);
-      unlinkSync(thumbFile);
+      if (hasError) {
+        res.sendStatus(403);
+        return;
+      }
+
+      req.body.paths.forEach((p) => {
+        const file = join(dir, p);
+        const thumbFile = getThumbName(file);
+
+        try {
+          console.log('Removing file', file);
+          unlinkSync(file);
+
+          console.log('Removing file', thumbFile);
+          unlinkSync(thumbFile);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
       res.json(getImages());
-    } catch (e) {
-      console.error(e);
-      res.sendStatus(500);
+    } else {
+      console.error('Expected an array, but did not get one');
+      res.sendStatus(403);
     }
   });
 
