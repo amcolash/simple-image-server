@@ -5,11 +5,11 @@
 - [] Canvas drawing
   - [] Persistence w/ localstorage or indexed db
 - [] Swipe targets w/ css
-- [] Hold to select
+- [x] Hold to select?
 
   - [] Make new folders
   - [] Move images to folders
-  - [] Multiselect?
-  - [] Delete
+  - [x] Multiselect?
+  - [x] Delete
 
 - [] Rotation

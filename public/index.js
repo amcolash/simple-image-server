@@ -269,9 +269,12 @@ function handleData(promise, handler) {
 
 function updateCheckboxes() {
   const checked = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]:checked'));
+
+  const captureButton = document.querySelector('.bottomButtons .capture');
   const deleteButton = document.querySelector('.bottomButtons .delete');
   const unselectButton = document.querySelector('.bottomButtons .unselect');
 
+  captureButton.style.display = checked.length > 0 ? 'none' : 'flex';
   deleteButton.style.display = checked.length > 0 ? 'flex' : 'none';
   unselectButton.style.display = checked.length > 0 ? 'flex' : 'none';
 }
