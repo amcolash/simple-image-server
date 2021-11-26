@@ -36,6 +36,9 @@ function init() {
       else showUI();
     }
   });
+
+  const pager = document.querySelector('.pager');
+  pager.addEventListener('scroll', showUI);
 }
 
 function updateImages() {
