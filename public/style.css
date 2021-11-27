@@ -181,17 +181,29 @@ button {
 }
 
 .folderModal .folders {
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .folderModal .folders .dir,
 .folderModal .newFolder button {
-  padding: 4px 8px;
+  display: flex;
+  padding: 6px 8px;
   margin: 10px 0;
   border-radius: 4px;
   cursor: pointer;
   background: #6b8;
   color: white;
+}
+
+.folderModal .folders .dir svg {
+  margin-right: 8px;
+}
+
+.folderModal .newFolder {
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
 }
 
 .folderModal .newFolder input,
@@ -202,6 +214,8 @@ button {
 .folderModal .newFolder input {
   margin-right: 8px;
   border-radius: 4px;
+  padding: 4px;
+  width: 100%;
 }
 
 .ui {

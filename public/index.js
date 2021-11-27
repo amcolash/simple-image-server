@@ -1,4 +1,6 @@
 const server = window.location.origin;
+const refreshTime = 2 * 60 * 1000;
+
 let currentDir = '.';
 let currentImages = [];
 let currentDirs = [];
@@ -49,12 +51,14 @@ function init() {
 
 function updateImages() {
   clearTimeout(updateTimer);
-  updateTimer = setTimeout(updateImages, 2 * 60 * 1000);
+  updateTimer = setTimeout(updateImages, refreshTime);
 
   handleData(fetch(`${server}/imageList`), parseImages);
 }
 
 function parseImages(res) {
+  const selected = getSelected();
+
   const root = document.querySelector('.root');
   root.replaceChildren();
 
@@ -102,6 +106,11 @@ function parseImages(res) {
     .forEach((img, i) => {
       createImage(img, i);
     });
+
+  const checked = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]'));
+  checked.forEach((c, i) => {
+    if (selected.indexOf(i) !== -1) c.checked = true;
+  });
 
   updateCheckboxes();
 }
@@ -161,12 +170,22 @@ function createDir(d, label) {
   SVGInject(img);
 
   const dirItem = document.createElement('div');
-  dirItem.innerText = label;
+
+  const img2 = document.createElement('img');
+  img2.src = 'img/folder.svg';
+  dirItem.appendChild(img2);
+
+  const labelEl = document.createElement('span');
+  labelEl.innerText = label;
+
+  dirItem.appendChild(labelEl);
   dirItem.className = 'dir';
   dirItem.onclick = () => moveSelected(d);
 
   const folders = document.querySelector('.folderModal .folders');
   folders.appendChild(dirItem);
+
+  SVGInject(img2);
 }
 
 function showModal() {
