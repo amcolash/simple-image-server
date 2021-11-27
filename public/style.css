@@ -56,7 +56,8 @@ button {
   z-index: 1;
 }
 
-.modal {
+.modal,
+.folderModal {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,6 +72,7 @@ button {
   background: rgba(0, 0, 0, 0.95);
   opacity: 0;
   pointer-events: none;
+  transition: opacity 0.25s;
 }
 
 .modal .imageContainer {
@@ -92,7 +94,8 @@ button {
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8));
 }
 
-.modal .toolbar {
+.modal .toolbar,
+.folderModal .toolbar {
   position: absolute;
   top: 16px;
   right: 16px;
@@ -145,6 +148,43 @@ button {
   top: 50%;
   right: 16px;
   transform: translateY(-50%);
+}
+
+.folderModal {
+  background: rgba(255, 255, 255, 0.4);
+  font-size: 20px;
+}
+
+.folderModal .content {
+  min-width: 300px;
+  padding: 16px;
+
+  background: white;
+  box-shadow: 4px 4px 6px rgb(0 0 0 / 15%);
+
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.folderModal .icon {
+  cursor: pointer;
+  padding: 0;
+}
+
+.folderModal .closeWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.folderModal .folders .dir {
+  padding: 4px 8px;
+  margin: 10px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #6b8;
+  color: white;
 }
 
 .ui {
@@ -225,8 +265,8 @@ button {
     padding: 15px;
   }
 
-  .modal .close {
-    top: 15px;
-    right: 15px;
+  .modal .toolbar {
+    top: 0;
+    right: 0;
   }
 }

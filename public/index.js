@@ -1,6 +1,7 @@
 const server = window.location.origin;
 let currentDir = '.';
 let currentImages = [];
+let currentDirs = [];
 let currentIndex = 0;
 
 let updateTimer;
@@ -13,6 +14,7 @@ function init() {
     switch (e.key) {
       case 'Escape':
         hideModal();
+        hideFolderModal();
         break;
       case 'ArrowRight':
         next();
@@ -55,6 +57,9 @@ function parseImages(res) {
   const pager = document.querySelector('.pager');
   pager.replaceChildren();
 
+  const folders = document.querySelector('.folderModal .folders');
+  folders.replaceChildren();
+
   const dirs = new Set();
   const images = [];
 
@@ -71,6 +76,7 @@ function parseImages(res) {
   });
 
   currentImages = images;
+  currentDirs = Array.from(dirs);
 
   if (currentDir !== '.') {
     const sections = currentDir.split('/');
@@ -149,6 +155,14 @@ function createDir(d, label) {
   root.appendChild(div);
 
   SVGInject(img);
+
+  const dirItem = document.createElement('div');
+  dirItem.innerText = label;
+  dirItem.className = 'dir';
+  dirItem.onclick = () => moveSelected(d);
+
+  const folders = document.querySelector('.folderModal .folders');
+  folders.appendChild(dirItem);
 }
 
 function showModal() {
@@ -195,6 +209,22 @@ function hideUI() {
   Array.from(document.querySelectorAll('.ui')).forEach((e) => e.classList.toggle('hidden', true));
 }
 
+function showFolderModal() {
+  const modal = document.querySelector('.folderModal');
+  modal.style.opacity = '1';
+  modal.style.pointerEvents = 'unset';
+
+  document.body.style.overflow = 'hidden';
+}
+
+function hideFolderModal() {
+  const modal = document.querySelector('.folderModal');
+  modal.style.opacity = '0';
+  modal.style.pointerEvents = 'none';
+
+  document.body.style.overflow = 'unset';
+}
+
 function removeImage() {
   if (confirm('Are you sure you want to delete this file?')) {
     hideModal();
@@ -211,15 +241,6 @@ function removeImage() {
       parseImages
     );
   }
-}
-
-function unselect() {
-  const checked = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]:checked'));
-  checked.forEach((c) => {
-    c.checked = false;
-  });
-
-  updateCheckboxes();
 }
 
 function deleteSelected() {
@@ -239,8 +260,23 @@ function deleteSelected() {
   }
 }
 
-function moveSelected() {
+function moveSelected(destination) {
   const selected = getSelected();
+
+  if (confirm(`Are you sure you want to move ${selected.length} file${selected.length > 1 ? 's' : ''}?`)) {
+    handleData(
+      fetch(`${server}/move`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ paths: selected.map((s) => currentImages[s].rel), destination }),
+      }),
+      parseImages
+    );
+  }
+
+  hideFolderModal();
 }
 
 function capture() {
@@ -253,26 +289,23 @@ function capture() {
   handleData(
     fetch(`${server}/capture`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentDir }) }),
     (data) => {
-    captureButton.style.background = '';
-    captureButton.style.color = '';
-    captureButton.style.cursor = '';
-    captureButton.disabled = false;
+      captureButton.style.background = '';
+      captureButton.style.color = '';
+      captureButton.style.cursor = '';
+      captureButton.disabled = false;
 
-    parseImages(data);
+      parseImages(data);
     }
   );
 }
-  });
-}
 
-function handleData(promise, handler) {
-  promise
-    .then((response) => {
-      if (response.status === 200) return response.json();
-      throw 'Server Error';
-    })
-    .then(handler)
-    .catch((err) => console.error(err));
+function unselect() {
+  const checked = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]:checked'));
+  checked.forEach((c) => {
+    c.checked = false;
+  });
+
+  updateCheckboxes();
 }
 
 function updateCheckboxes() {
@@ -313,9 +346,20 @@ function next(e) {
   showModal();
 }
 
+function handleData(promise, handler) {
+  promise
+    .then((response) => {
+      if (response.status === 200) return response.json();
+      throw 'Server Error';
+    })
+    .then(handler)
+    .catch((err) => console.error(err));
+}
+
 // From https://stackoverflow.com/a/17323608/2303432
 function mod(n, m) {
   return ((n % m) + m) % m;
 }
 
+// On load, start things up
 window.onload = init;

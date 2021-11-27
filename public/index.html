@@ -15,6 +15,7 @@
     <div class="root"></div>
     <div class="modal">
       <div class="toolbar ui">
+        <!-- <button class="icon rotate" onclick="rotateImage()"><img src="img/rotate-cw.svg" onload="SVGInject(this)" /></button> -->
         <button class="icon remove" onclick="removeImage()"><img src="img/trash.svg" onload="SVGInject(this)" /></button>
         <button class="icon close" onclick="hideModal()"><img src="img/x.svg" onload="SVGInject(this)" /></button>
       </div>
@@ -26,9 +27,18 @@
       </div>
       <div class="pager ui"></div>
     </div>
+    <div class="folderModal">
+      <div class="content">
+        <div class="closeWrapper">
+          <div>Choose a Folder</div>
+          <button class="icon close" onclick="hideFolderModal()"><img src="img/x.svg" onload="SVGInject(this)" /></button>
+        </div>
+        <div class="folders"></div>
+      </div>
+    </div>
     <div class="bottomButtons">
       <div class="selection">
-        <button class="move" onclick="moveSelected()">
+        <button class="move" onclick="showFolderModal()">
           <img src="img/folder.svg" onload="SVGInject(this)" />
         </button>
         <button class="delete" onclick="deleteSelected()">

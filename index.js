@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 const express = require('express');
-const { existsSync, mkdirSync, statSync, unlinkSync, writeFileSync } = require('fs');
+const { existsSync, mkdirSync, statSync, unlinkSync, writeFileSync, renameSync } = require('fs');
 const { getAllFilesSync } = require('get-all-files');
 const os = require('os');
-const { dirname, join, relative, resolve, sep } = require('path');
+const { basename, dirname, join, relative, resolve, sep } = require('path');
 const screenshot = require('screenshot-desktop');
 const sharp = require('sharp');
 
@@ -168,6 +168,29 @@ if (write) {
         console.error(err);
         res.sendStatus(500);
       });
+  });
+
+  app.post('/move', (req, res) => {
+    try {
+      req.body.paths.forEach((f) => {
+        const source = join(dir, f);
+        const destDir = join(dir, req.body.destination);
+        const dest = join(destDir, basename(f));
+
+        if (!existsSync(destDir)) {
+          console.log(`Destination does not exist, making new directory ${destDir}`);
+          mkdirSync(destDir, { recursive: true });
+        }
+
+        console.log(`Moving ${source} to ${dest}`);
+        renameSync(source, dest);
+      });
+
+      res.json(getImages());
+    } catch (e) {
+      console.error(e);
+      res.sendStatus(500);
+    }
   });
 }
 
