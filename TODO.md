@@ -7,9 +7,9 @@
 - [] Swipe targets w/ css
 - [x] Hold to select?
 
-  - [] Make new folders
-  - [] Move images to folders
+  - [x] Make new folders
+  - [x] Move images to folders
   - [x] Multiselect?
   - [x] Delete
 
-- [] Rotation
+- [] Rotation?

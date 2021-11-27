@@ -47,7 +47,7 @@ button {
   color: #7cf;
 }
 
-.card input {
+.card input[type='checkbox'] {
   position: absolute;
   bottom: 10px;
   right: 10px;
@@ -156,7 +156,9 @@ button {
 }
 
 .folderModal .content {
-  min-width: 300px;
+  min-width: min(300px, 85vw);
+  max-width: min(300px, 85vw);
+
   padding: 16px;
 
   background: white;
@@ -283,5 +285,10 @@ button {
   .modal .toolbar {
     top: 0;
     right: 0;
+  }
+
+  .card input[type='checkbox'] {
+    height: 22px;
+    width: 22px;
   }
 }

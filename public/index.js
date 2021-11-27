@@ -187,6 +187,17 @@ function showModal() {
     } else e.style.outlineColor = 'unset';
   });
 
+  setTimeout(() => {
+    const prev = mod(currentIndex - 1, currentImages.length);
+    const next = mod(currentIndex + 1, currentImages.length);
+
+    const prevImg = document.querySelector('.prevImage');
+    const nextImg = document.querySelector('.nextImage');
+
+    prevImg.src = currentImages[prev].file;
+    nextImg.src = currentImages[next].file;
+  }, 1000);
+
   showUI();
 }
 
