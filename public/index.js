@@ -137,6 +137,7 @@ function createDir(d, label) {
 
   const img = document.createElement('img');
   img.src = 'img/folder.svg';
+  img.style = 'stroke-width: 1';
   div.appendChild(img);
   div.onclick = () => selectDir(d);
 
@@ -222,12 +223,7 @@ function unselect() {
 }
 
 function deleteSelected() {
-  const checkboxes = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]'));
-  const selected = [];
-
-  checkboxes.forEach((c, i) => {
-    if (c.checked) selected.push(currentImages[i].rel);
-  });
+  const selected = getSelected();
 
   if (confirm(`Are you sure you want to delete ${selected.length} file${selected.length > 1 ? 's' : ''}?`)) {
     handleData(
@@ -236,11 +232,15 @@ function deleteSelected() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ paths: selected }),
+        body: JSON.stringify({ paths: selected.map((s) => currentImages[s].rel) }),
       }),
       parseImages
     );
   }
+}
+
+function moveSelected() {
+  const selected = getSelected();
 }
 
 function capture() {
@@ -273,13 +273,22 @@ function handleData(promise, handler) {
 function updateCheckboxes() {
   const checked = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]:checked'));
 
-  const captureButton = document.querySelector('.bottomButtons .capture');
-  const deleteButton = document.querySelector('.bottomButtons .delete');
-  const unselectButton = document.querySelector('.bottomButtons .unselect');
+  const selectionButtons = document.querySelector('.bottomButtons .selection');
+  selectionButtons.style.display = checked.length > 0 ? 'flex' : 'none';
 
-  captureButton.style.display = checked.length > 0 ? 'none' : 'flex';
-  deleteButton.style.display = checked.length > 0 ? 'flex' : 'none';
-  unselectButton.style.display = checked.length > 0 ? 'flex' : 'none';
+  const simpleButtons = document.querySelector('.bottomButtons .simple');
+  simpleButtons.style.display = checked.length > 0 ? 'none' : 'flex';
+}
+
+function getSelected() {
+  const checkboxes = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]'));
+  const selected = [];
+
+  checkboxes.forEach((c, i) => {
+    if (c.checked) selected.push(i);
+  });
+
+  return selected;
 }
 
 function selectDir(d) {

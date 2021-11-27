@@ -165,14 +165,20 @@ button {
   display: flex;
 }
 
+.bottomButtons .selection {
+  display: none;
+}
+
+.bottomButtons .move {
+  background: #6b8;
+}
+
 .bottomButtons .delete {
   background: #c66;
-  display: none;
 }
 
 .bottomButtons .unselect {
   background: #555;
-  display: none;
 }
 
 .bottomButtons button {
