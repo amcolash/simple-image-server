@@ -16,6 +16,10 @@ function init() {
         hideModal();
         hideFolderModal();
         break;
+      case 'Enter':
+        const folderName = document.querySelector('.folderModal .newFolder .folderName');
+        if (document.activeElement === folderName && folderName.value.length > 0) createFolder();
+        break;
       case 'ArrowRight':
         next();
         break;
@@ -215,6 +219,9 @@ function showFolderModal() {
   modal.style.pointerEvents = 'unset';
 
   document.body.style.overflow = 'hidden';
+
+  const folderName = document.querySelector('.folderModal .newFolder .folderName');
+  folderName.value = '';
 }
 
 function hideFolderModal() {
@@ -257,6 +264,15 @@ function deleteSelected() {
       }),
       parseImages
     );
+  }
+}
+
+function createFolder() {
+  const folderName = document.querySelector('.folderModal .newFolder .folderName');
+
+  if (folderName.value.length > 0) {
+    const newFolder = currentDir + '/' + folderName.value;
+    moveSelected(newFolder);
   }
 }
 

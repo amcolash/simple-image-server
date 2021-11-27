@@ -178,13 +178,28 @@ button {
   margin-bottom: 16px;
 }
 
-.folderModal .folders .dir {
+.folderModal .folders {
+  margin-bottom: 16px;
+}
+
+.folderModal .folders .dir,
+.folderModal .newFolder button {
   padding: 4px 8px;
   margin: 10px 0;
   border-radius: 4px;
   cursor: pointer;
   background: #6b8;
   color: white;
+}
+
+.folderModal .newFolder input,
+.folderModal .newFolder button {
+  font-size: 20px;
+}
+
+.folderModal .newFolder input {
+  margin-right: 8px;
+  border-radius: 4px;
 }
 
 .ui {
