@@ -7,19 +7,26 @@ const os = require('os');
 const { basename, dirname, join, relative, resolve, sep } = require('path');
 const screenshot = require('screenshot-desktop');
 const sharp = require('sharp');
+const yargs = require('yargs');
 
-const argv = require('yargs')
+const argv = yargs
   .usage('Usage: $0 [options] <folder>')
+
+  .alias('v', 'version')
 
   .alias('p', 'port')
   .nargs('p', 1)
+  .number('p')
   .describe('p', 'Specify a port')
 
   .alias('w', 'write-access')
   .nargs('w', 0)
-  .describe('w', 'Allow write access to location (take screenshot, delete, move)')
+  .boolean('w')
+  .describe('w', 'Allow write access to directory (screenshot, delete, move)')
 
   .demand(1)
+  .wrap(100)
+
   .help('h')
   .alias('h', 'help').argv;
 
@@ -80,10 +87,13 @@ function getFiles() {
 }
 
 function getImages() {
-  return getFiles().map((f) => {
-    const rel = relative(dir, f);
-    return { file: join('/images/', rel), thumb: join('/thumbs/', rel), rel, dir: dirname(rel), created: statSync(f).birthtime };
-  });
+  return {
+    files: getFiles().map((f) => {
+      const rel = relative(dir, f);
+      return { file: join('/images/', rel), thumb: join('/thumbs/', rel), rel, dir: dirname(rel), created: statSync(f).birthtime };
+    }),
+    write,
+  };
 }
 
 const app = express();

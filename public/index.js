@@ -71,7 +71,7 @@ function parseImages(res) {
   const dirs = new Set();
   const images = [];
 
-  res.forEach((f) => {
+  res.files.forEach((f) => {
     if (f.dir === currentDir) {
       images.push(f);
     } else if (
@@ -111,6 +111,10 @@ function parseImages(res) {
   checked.forEach((c, i) => {
     if (selected.indexOf(i) !== -1) c.checked = true;
   });
+
+  // Toggle write mode class based on if the server supports it or not
+  const realRoot = document.querySelector('.realRoot');
+  realRoot.classList.toggle('write', res.write);
 
   updateCheckboxes();
 }

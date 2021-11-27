@@ -16,6 +16,13 @@ button {
   padding: 16px 16px 60px;
 }
 
+/* Write mode enabled */
+.realRoot.write .bottomButtons,
+.realRoot.write .card input[type='checkbox'],
+.realRoot.write .toolbar .remove {
+  display: flex;
+}
+
 .card {
   display: flex;
   align-items: center;
@@ -54,6 +61,7 @@ button {
   height: 18px;
   width: 18px;
   z-index: 1;
+  display: none;
 }
 
 .modal,
@@ -94,11 +102,15 @@ button {
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8));
 }
 
-.modal .toolbar,
-.folderModal .toolbar {
+.modal .toolbar {
+  display: flex;
   position: absolute;
   top: 16px;
   right: 16px;
+}
+
+.modal .toolbar .remove {
+  display: none;
 }
 
 .modal .pager {
@@ -233,7 +245,7 @@ button {
   right: 20px;
   z-index: 1;
 
-  display: flex;
+  display: none;
 }
 
 .bottomButtons .selection {
