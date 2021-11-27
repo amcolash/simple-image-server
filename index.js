@@ -154,7 +154,7 @@ if (write) {
       .toString()
       .padStart(2, '0')} ${d.getHours() >= 12 ? 'PM' : 'AM'}`;
 
-    const file = join(dir, `Screenshot ${dateString} ${timeString}.png`);
+    const file = join(dir, req.body.currentDir, `Screenshot ${dateString} ${timeString}.png`);
 
     console.log('Taking screenshot', file);
 

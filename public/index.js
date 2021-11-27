@@ -250,13 +250,18 @@ function capture() {
   captureButton.style.cursor = 'unset';
   captureButton.disabled = true;
 
-  handleData(fetch(`${server}/capture`, { method: 'POST' }), (data) => {
+  handleData(
+    fetch(`${server}/capture`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentDir }) }),
+    (data) => {
     captureButton.style.background = '';
     captureButton.style.color = '';
     captureButton.style.cursor = '';
     captureButton.disabled = false;
 
     parseImages(data);
+    }
+  );
+}
   });
 }
 
