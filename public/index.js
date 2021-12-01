@@ -385,12 +385,18 @@ function selectDir(d) {
 }
 
 function previous(e) {
+  const modal = document.querySelector('.modal');
+  if (modal.style.opacity !== '1') return;
+
   if (e) e.stopPropagation();
   currentIndex = mod(currentIndex - 1, currentImages.length);
   showModal();
 }
 
 function next(e) {
+  const modal = document.querySelector('.modal');
+  if (modal.style.opacity !== '1') return;
+
   if (e) e.stopPropagation();
   currentIndex = mod(currentIndex + 1, currentImages.length);
   showModal();
