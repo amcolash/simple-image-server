@@ -72,6 +72,12 @@ function parseImages(res) {
   const images = [];
 
   res.files.forEach((f) => {
+    Object.entries(f).forEach((e) => {
+      f[e[0]] = e[1].replace(/\\/g, '/');
+    });
+
+    console.log(f);
+
     if (f.dir === currentDir) {
       images.push(f);
     } else if (
@@ -80,6 +86,8 @@ function parseImages(res) {
       f.dir !== '.'
     ) {
       dirs.add(f.dir);
+    } else if (currentDir === '.' && f.dir.split('/').length > 1) {
+      dirs.add(f.dir.split('/')[0]);
     }
   });
 
