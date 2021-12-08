@@ -76,8 +76,6 @@ function parseImages(res) {
       f[e[0]] = e[1].replace(/\\/g, '/');
     });
 
-    console.log(f);
-
     if (f.dir === currentDir) {
       images.push(f);
     } else if (
