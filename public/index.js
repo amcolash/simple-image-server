@@ -12,6 +12,10 @@ let uiTimer;
 function init() {
   updateImages();
 
+  const params = new URLSearchParams(window.location.search);
+  currentDir = params.get('currentDir') || '.';
+  selectDir(currentDir);
+
   document.addEventListener('keydown', (e) => {
     switch (e.key) {
       case 'Escape':
@@ -387,6 +391,7 @@ function getSelected() {
 
 function selectDir(d) {
   currentDir = d;
+  window.history.pushState({ currentDir: d }, d, `?currentDir=${d}`);
   updateImages();
 }
 

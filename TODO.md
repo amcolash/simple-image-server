@@ -13,3 +13,4 @@
   - [x] Delete
 
 - [] Rotation?
+- [x] Add current path to url
