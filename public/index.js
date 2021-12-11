@@ -278,8 +278,6 @@ function hideFolderModal() {
 
 function removeImage() {
   if (confirm('Are you sure you want to delete this file?')) {
-    hideModal();
-
     const img = currentImages[currentIndex];
     handleData(
       fetch(`${server}/image`, {
@@ -289,7 +287,12 @@ function removeImage() {
         },
         body: JSON.stringify({ paths: [img.rel] }),
       }),
-      parseImages
+      (data) => {
+        parseImages(data);
+
+        currentIndex = mod(currentIndex - 1, currentImages.length);
+        showModal();
+      }
     );
   }
 }
@@ -343,7 +346,7 @@ function moveSelected(destination) {
   hideFolderModal();
 }
 
-function capture() {
+function capture(focusNew) {
   const captureButton = document.querySelector('.capture');
   captureButton.style.background = '#eee';
   captureButton.style.color = '#aaa';
@@ -359,6 +362,11 @@ function capture() {
       captureButton.disabled = false;
 
       parseImages(data);
+
+      if (focusNew) {
+        currentIndex = currentImages.length - 1;
+        showModal();
+      }
     }
   );
 }
