@@ -37,6 +37,12 @@ function init() {
     }
   });
 
+  window.addEventListener('popstate', () => {
+    const params = new URLSearchParams(window.location.search);
+    currentDir = params.get('currentDir') || '.';
+    selectDir(currentDir, true);
+  });
+
   const modalImage = document.querySelector('.modal .image');
   modalImage.addEventListener('swiped-right', previous);
   modalImage.addEventListener('swiped-left', next);
@@ -401,10 +407,13 @@ function getSelected() {
   return selected;
 }
 
-function selectDir(d) {
+function selectDir(d, ignoreHistory) {
   currentDir = d;
-  window.history.pushState({ currentDir: d }, d, `?currentDir=${d}`);
+  if (!ignoreHistory) window.history.pushState({ currentDir: d }, d, `?currentDir=${d}`);
   updateImages();
+
+  hideFolderModal();
+  hideModal();
 }
 
 function previous(e) {
