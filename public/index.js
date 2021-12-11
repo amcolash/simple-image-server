@@ -298,6 +298,8 @@ function deleteSelected() {
   const selected = getSelected();
 
   if (confirm(`Are you sure you want to delete ${selected.length} file${selected.length > 1 ? 's' : ''}?`)) {
+    unselect();
+
     handleData(
       fetch(`${server}/image`, {
         method: 'DELETE',
@@ -324,6 +326,8 @@ function moveSelected(destination) {
   const selected = getSelected();
 
   if (confirm(`Are you sure you want to move ${selected.length} file${selected.length > 1 ? 's' : ''}?`)) {
+    unselect();
+
     handleData(
       fetch(`${server}/move`, {
         method: 'POST',
