@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
 const express = require('express');
-const { existsSync, mkdirSync, statSync, unlinkSync, writeFileSync, renameSync } = require('fs');
+const { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync, renameSync, fstat } = require('fs');
 const { getAllFilesSync } = require('get-all-files');
+const https = require('https');
+const http = require('http');
 const os = require('os');
 const { basename, dirname, join, relative, resolve, sep } = require('path');
 const screenshot = require('screenshot-desktop');
@@ -23,6 +25,16 @@ const argv = yargs
   .nargs('w', 0)
   .boolean('w')
   .describe('w', 'Allow write access to directory (screenshot, delete, move)')
+
+  .alias('c', 'cert')
+  .nargs('c', 1)
+  .string('c')
+  .describe('c', 'Certificate path')
+
+  .alias('k', 'key')
+  .nargs('k', 1)
+  .string('k')
+  .describe('k', 'Private key path')
 
   .demand(1)
   .wrap(100)
@@ -99,6 +111,33 @@ function getImages() {
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+let creds;
+if (argv.c && argv.k) {
+  const cert = resolve(argv.c);
+  const key = resolve(argv.k);
+
+  if (existsSync(cert) && existsSync(key)) {
+    creds = { key: readFileSync(key), cert: readFileSync(cert) };
+  } else {
+    console.error('Could not find cert + key', cert, key);
+  }
+}
+
+let server;
+if (creds) {
+  server = https.createServer(creds, app);
+} else {
+  server = http.createServer(app);
+}
+
+server.listen(port, () => {
+  console.log(`Serving images in ${dir}`);
+  console.log(`Write access is ${write ? 'enabled' : 'disabled'}`);
+  console.log(`Server listening at ${creds ? 'https' : 'http'}://localhost:${port}`);
+
+  generateThumbs();
+});
 
 app.use(express.static(join(__dirname, 'public')));
 app.use('/images', express.static(dir, { maxAge: 60 * 60 * 1000 }));
@@ -203,11 +242,3 @@ if (write) {
     }
   });
 }
-
-app.listen(port, () => {
-  console.log(`Serving images in ${dir}`);
-  console.log(`Write access is ${write ? 'enabled' : 'disabled'}`);
-  console.log(`Server listening at http://localhost:${port}`);
-
-  generateThumbs();
-});
