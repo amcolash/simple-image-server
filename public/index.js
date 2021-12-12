@@ -9,6 +9,8 @@ let currentIndex = 0;
 let updateTimer;
 let uiTimer;
 
+let wakeLock;
+
 function init() {
   updateImages();
 
@@ -41,6 +43,10 @@ function init() {
     const params = new URLSearchParams(window.location.search);
     currentDir = params.get('currentDir') || '.';
     selectDir(currentDir, true);
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (wakeLock && document.visibilityState === 'visible') acquireWakelock();
   });
 
   const modalImage = document.querySelector('.modal .image');
@@ -209,6 +215,8 @@ function createDir(d, label) {
 }
 
 function showModal() {
+  acquireWakelock();
+
   const modal = document.querySelector('.modal');
   modal.style.opacity = '1';
   modal.style.pointerEvents = 'unset';
@@ -241,6 +249,8 @@ function showModal() {
 }
 
 function hideModal() {
+  releaseWakelock();
+
   const modal = document.querySelector('.modal');
   modal.style.opacity = '0';
   modal.style.pointerEvents = 'none';
@@ -447,6 +457,30 @@ function handleData(promise, handler) {
 // From https://stackoverflow.com/a/17323608/2303432
 function mod(n, m) {
   return ((n % m) + m) % m;
+}
+
+function acquireWakelock() {
+  releaseWakelock();
+
+  try {
+    navigator.wakeLock
+      .request('screen')
+      .then((lock) => (wakeLock = lock))
+      .catch((err) => console.error(err));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function releaseWakelock() {
+  try {
+    if (wakeLock) {
+      wakeLock.release();
+      wakeLock = undefined;
+    }
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 // On load, start things up
