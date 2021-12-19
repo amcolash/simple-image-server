@@ -53,9 +53,12 @@ function init() {
   modalImage.addEventListener('swiped-right', previous);
   modalImage.addEventListener('swiped-left', next);
 
+  const modalImageContainer = document.querySelector('.modal .imageContainer');
+
   const modal = document.querySelector('.modal');
   modal.addEventListener('click', (e) => {
-    if (e.target === modal || e.target === modalImage) {
+    console.log(e.target);
+    if (e.target === modal || e.target === modalImage || e.target === modalImageContainer) {
       if (uiTimer) hideUI();
       else showUI();
     }

@@ -1,6 +1,6 @@
 {
   "name": "@amcolash/simple-image-server",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "description": "A small server that hosts images (similar to simplehttpserver)",
   "main": "index.js",
   "bin": {
