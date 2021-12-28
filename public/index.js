@@ -294,6 +294,23 @@ function hideFolderModal() {
   document.body.style.overflow = 'unset';
 }
 
+// function rotateImage() {
+//   const img = currentImages[currentIndex];
+//   handleData(
+//     fetch(`${server}/rotate`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({ path: img.rel }),
+//     }),
+//     (data) => {
+//       parseImages(data);
+//       showModal();
+//     }
+//   );
+// }
+
 function removeImage() {
   if (confirm('Are you sure you want to delete this file?')) {
     const img = currentImages[currentIndex];

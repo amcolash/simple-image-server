@@ -147,9 +147,7 @@ app.use('/images', express.static(dir, options));
 app.use('/thumbs', express.static(tmp, options));
 
 app.get('/imageList', (req, res) => {
-  generateThumbs().then(() => {
-    res.json(getImages());
-  });
+  generateThumbs().then(() => res.json(getImages()));
 });
 
 // Only enable write access if specified by user
@@ -166,7 +164,7 @@ if (write) {
         }
 
         if (!existsSync(join(dir, p))) {
-          console.error('File does not exists', p);
+          console.error('File does not exist', p);
           hasError = true;
         }
       });
@@ -197,6 +195,36 @@ if (write) {
       res.sendStatus(403);
     }
   });
+
+  // app.post('/rotate', async (req, res) => {
+  //   if (!req.body.path) {
+  //     console.error('Expected a path, but did not get one');
+  //     res.sendStatus(403);
+  //     return;
+  //   }
+
+  //   const file = join(dir, req.body.path);
+
+  //   if (!existsSync(file)) {
+  //     console.error('File does not exist', p);
+  //     res.sendStatus(404);
+  //     return;
+  //   }
+
+  //   try {
+  //     const rotated = await sharp(file).rotate(90).toBuffer();
+  //     await sharp(rotated).jpeg().toFile(file);
+
+  //     const thumbFile = getThumbName(file);
+
+  //     console.log('Removing file', thumbFile);
+  //     unlinkSync(thumbFile);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+
+  //   generateThumbs().then(() => res.json(getImages()));
+  // });
 
   app.post('/capture', (req, res) => {
     const d = new Date();
