@@ -63,13 +63,13 @@ try {
 // Make tmp dir if it doesn't exist
 if (!existsSync(tmp)) mkdirSync(tmp);
 
-function generateThumbs() {
+function generateThumbs(overwrite) {
   const promises = [];
 
   getFiles().forEach((f) => {
     const thumbFile = getThumbName(f);
 
-    if (!existsSync(thumbFile)) {
+    if (!existsSync(thumbFile) || overwrite) {
       console.log(`Generating thumbnail for ${f}: ${thumbFile}`);
       mkdirSync(dirname(thumbFile), { recursive: true });
 
@@ -139,9 +139,12 @@ server.listen(port, () => {
   generateThumbs();
 });
 
+const options = {};
+// const options = { maxAge: 60 * 60 * 1000 };
+
 app.use(express.static(join(__dirname, 'public')));
-app.use('/images', express.static(dir, { maxAge: 60 * 60 * 1000 }));
-app.use('/thumbs', express.static(tmp, { maxAge: 60 * 60 * 1000 }));
+app.use('/images', express.static(dir, options));
+app.use('/thumbs', express.static(tmp, options));
 
 app.get('/imageList', (req, res) => {
   generateThumbs().then(() => {

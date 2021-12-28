@@ -57,7 +57,6 @@ function init() {
 
   const modal = document.querySelector('.modal');
   modal.addEventListener('click', (e) => {
-    console.log(e.target);
     if (e.target === modal || e.target === modalImage || e.target === modalImageContainer) {
       if (uiTimer) hideUI();
       else showUI();
