@@ -7,9 +7,9 @@
     "simple-image-server": "./index.js"
   },
   "scripts": {
-    "start": "nodemon --exec \"node index.js -p 3000 -c .cert/cert.pem -k .cert/key.pem -w test/\"",
+    "start": "nodemon --exec \"node index.js -p 3000 -c .cert/cert.pem -k .cert/privkey.pem -w test/\"",
     "basic": "nodemon --exec \"node index.js -p 3000 test/\"",
-    "start-win": "nodemon --exec \"node index.js -p 3000 -c .cert/cert.pem -k .cert/key.pem -w ~/Videos/Captures/\""
+    "start-win": "nodemon --exec \"node index.js -p 3000 -c .cert/cert.pem -k .cert/privkey.pem -w ~/Videos/Captures/\""
   },
   "repository": {
     "type": "git",
