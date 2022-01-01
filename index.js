@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
+const compression = require('compression');
 const express = require('express');
-const { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync, renameSync, fstat } = require('fs');
+const { existsSync, mkdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFile, writeFileSync } = require('fs');
 const { getAllFilesSync } = require('get-all-files');
 const https = require('https');
 const http = require('http');
@@ -9,6 +10,7 @@ const os = require('os');
 const { basename, dirname, join, relative, resolve, sep } = require('path');
 const screenshot = require('screenshot-desktop');
 const sharp = require('sharp');
+const sizeOf = require('image-size');
 const yargs = require('yargs');
 
 const argv = yargs
@@ -60,6 +62,11 @@ try {
   process.exit(1);
 }
 
+let data = { drawings: {} };
+const dataFile = join(dir, 'data.json');
+
+loadData();
+
 // Make tmp dir if it doesn't exist
 if (!existsSync(tmp)) mkdirSync(tmp);
 
@@ -99,18 +106,47 @@ function getFiles() {
 }
 
 function getImages() {
-  return {
+  const images = {
     files: getFiles().map((f) => {
       const rel = relative(dir, f);
-      return { file: join('/images/', rel), thumb: join('/thumbs/', rel), rel, dir: dirname(rel), created: statSync(f).birthtime };
+      const dimensions = sizeOf(f);
+
+      return {
+        file: join('/images/', rel),
+        thumb: join('/thumbs/', rel),
+        rel,
+        dir: dirname(rel),
+        created: statSync(f).birthtime,
+        drawing: data.drawings[rel],
+        dimensions,
+      };
     }),
     write,
   };
+
+  return images;
+}
+
+function loadData() {
+  if (existsSync(dataFile)) {
+    data = JSON.parse(readFileSync(dataFile));
+  } else {
+    saveData(true);
+  }
+}
+
+function saveData(sync) {
+  if (sync) writeFileSync(dataFile, JSON.stringify(data));
+  else
+    writeFile(dataFile, JSON.stringify(data), (err) => {
+      if (err) console.error(err);
+    });
 }
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(compression());
 
 let creds;
 if (argv.c && argv.k) {
@@ -251,24 +287,41 @@ if (write) {
   });
 
   app.post('/move', (req, res) => {
-    try {
-      req.body.paths.forEach((f) => {
-        const source = join(dir, f);
-        const destDir = join(dir, req.body.destination);
-        const dest = join(destDir, basename(f));
+    if (req.body.paths) {
+      try {
+        req.body.paths.forEach((f) => {
+          const source = join(dir, f);
+          const destDir = join(dir, req.body.destination);
+          const dest = join(destDir, basename(f));
 
-        if (!existsSync(destDir)) {
-          console.log(`Destination does not exist, making new directory ${destDir}`);
-          mkdirSync(destDir, { recursive: true });
-        }
+          if (!existsSync(destDir)) {
+            console.log(`Destination does not exist, making new directory ${destDir}`);
+            mkdirSync(destDir, { recursive: true });
+          }
 
-        console.log(`Moving ${source} to ${dest}`);
-        renameSync(source, dest);
-      });
+          console.log(`Moving ${source} to ${dest}`);
+          renameSync(source, dest);
+        });
 
-      res.json(getImages());
-    } catch (e) {
-      console.error(e);
+        res.json(getImages());
+      } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+      }
+    } else {
+      console.error('Expected an array, but did not get one');
+      res.sendStatus(403);
+    }
+  });
+
+  app.post('/drawing', (req, res) => {
+    if (req.body.path && req.body.data) {
+      data.drawings[req.body.path] = req.body.data;
+      saveData();
+
+      res.sendStatus(200);
+    } else {
+      console.error('Drawing missing parameters');
       res.sendStatus(500);
     }
   });

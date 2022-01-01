@@ -119,7 +119,7 @@ function init() {
   clearButton.addEventListener('click', () => clear(true));
 
   const redrawButton = document.querySelector('#redraw');
-  redrawButton.addEventListener('click', redraw);
+  redrawButton.addEventListener('click', () => draw);
 
   const palette = document.querySelector('#palette');
   const colors = ['black', 'red', 'orange', 'yellow', 'lime', 'green', 'blue', 'indigo', 'purple', 'transparent'];
@@ -145,15 +145,22 @@ function init() {
   updateColor('black');
 }
 
-function redraw() {
-  clear(false);
+function draw(canvasEl, pointString) {
+  clear(false, canvasEl);
 
-  const canvas = document.querySelector('canvas');
+  const canvas = canvasEl || document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
 
   let currentColor;
 
-  points.forEach((point) => {
+  let allPoints = points;
+  try {
+    if (pointString) allPoints = JSON.parse(LZString.decompressFromUTF16(pointString));
+  } catch (err) {
+    console.error(err);
+  }
+
+  allPoints.forEach((point) => {
     if (point.length > 0) {
       if (point.length === 4) currentColor = point[3];
       const pressure = point[2];
@@ -208,14 +215,16 @@ function updateColor(newColor) {
 function updateStats() {
   const stats = document.querySelector('#stats');
 
-  let raw = JSON.stringify(points);
-  let compressed = LZString.compress(raw);
+  if (stats) {
+    let raw = JSON.stringify(points);
+    let compressed = LZString.compress(raw);
 
-  stats.innerHTML = `Raw: ${raw.length}<br/>Compressed: ${compressed.length}<br/>Ratio: ${(raw.length / compressed.length).toFixed(3)}`;
+    stats.innerHTML = `Raw: ${raw.length}<br/>Compressed: ${compressed.length}<br/>Ratio: ${(raw.length / compressed.length).toFixed(3)}`;
+  }
 }
 
-function clear(resetPoints) {
-  const canvas = document.querySelector('canvas');
+function clear(resetPoints, canvasEl) {
+  const canvas = canvasEl || document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
 
   ctx.clearRect(0, 0, width, height);

@@ -7,9 +7,9 @@
     "simple-image-server": "./index.js"
   },
   "scripts": {
-    "start": "nodemon --exec \"node index.js -p 3000 -c .cert/cert.pem -k .cert/privkey.pem -w test/\"",
-    "basic": "nodemon --exec \"node index.js -p 3000 test/\"",
-    "start-win": "nodemon --exec \"node index.js -p 3000 -c .cert/cert.pem -k .cert/privkey.pem -w ~/Videos/Captures/\""
+    "start": "nodemon -e js --exec \"node index.js -p 3000 -c .cert/cert.pem -k .cert/privkey.pem -w test/\"",
+    "basic": "nodemon -e js --exec \"node index.js -p 3000 test/\"",
+    "start-win": "nodemon -e js --exec \"node index.js -p 3000 -c .cert/cert.pem -k .cert/privkey.pem -w ~/Videos/Captures/\""
   },
   "repository": {
     "type": "git",
@@ -22,8 +22,10 @@
   },
   "homepage": "https://github.com/amcolash/simple-image-server#readme",
   "dependencies": {
+    "compression": "^1.7.4",
     "express": "^4.17.1",
     "get-all-files": "^4.1.0",
+    "image-size": "^1.0.0",
     "screenshot-desktop": "^1.12.7",
     "sharp": "^0.29.3",
     "yargs": "^17.2.1"
