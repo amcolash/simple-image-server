@@ -32,7 +32,7 @@ function initCanvas(canvasEl) {
   }
 
   if (!examplePage) {
-    const serverScalar = 6;
+    const serverScalar = 2;
     markerSize *= serverScalar;
     eraserSize *= serverScalar;
   }
@@ -62,19 +62,21 @@ function initCanvas(canvasEl) {
     cursor.style.visibility = 'visible';
 
     if (color === 'transparent') {
-      const scaledSize = eraserSize * pressure * 1.5 * (1 / avgRatio);
-      cursor.style.transform = `translate(${e.offsetX}px, ${e.offsetY}px)`;
+      const scaledSize = eraserSize * pressure * 1.8 * (1 / avgRatio);
+      cursor.style.transform = `translate(${e.pageX - 0.5 * scaledSize}px, ${e.pageY - 0.5 * scaledSize}px)`;
 
-      cursor.style.padding = scaledSize / 2 + 'px';
+      cursor.style.width = scaledSize + 'px';
+      cursor.style.height = scaledSize + 'px';
     } else {
       const scaledSize = markerSize * pressure * (1 / avgRatio);
-      cursor.style.transform = `translate(${e.offsetX}px, ${e.offsetY}px)`;
+      cursor.style.transform = `translate(${e.pageX - 0.5 * scaledSize}px, ${e.pageY - 0.5 * scaledSize}px)`;
 
-      cursor.style.padding = scaledSize / 2 + 'px';
+      cursor.style.width = scaledSize + 'px';
+      cursor.style.height = scaledSize + 'px';
     }
 
-    const canvasX = e.offsetX * canvasXRatio;
-    const canvasY = e.offsetY * canvasYRatio;
+    const canvasX = Math.floor(e.offsetX * canvasXRatio);
+    const canvasY = Math.floor(e.offsetY * canvasYRatio);
 
     if (e.buttons === 1) {
       if (lastX !== -1 && lastY !== -1) {
@@ -271,12 +273,12 @@ function updateColor(newColor) {
 }
 
 function updateStats() {
-  // const stats = document.querySelector('#stats');
-  // if (stats) {
-  //   let raw = JSON.stringify(points);
-  //   let compressed = LZString.compress(raw);
-  //   stats.innerHTML = `Raw: ${raw.length}<br/>Compressed: ${compressed.length}<br/>Ratio: ${(raw.length / compressed.length).toFixed(3)}`;
-  // }
+  const stats = document.querySelector('#stats');
+  if (stats) {
+    let raw = JSON.stringify(points);
+    let compressed = LZString.compress(raw);
+    stats.innerHTML = `Raw: ${raw.length}<br/>Compressed: ${compressed.length}<br/>Ratio: ${(raw.length / compressed.length).toFixed(3)}`;
+  }
 }
 
 function clear(resetPoints, canvasEl) {
@@ -292,9 +294,4 @@ function clear(resetPoints, canvasEl) {
 
 function lerp(v0, v1, t) {
   return v0 * (1 - t) + v1 * t;
-}
-
-if (examplePage) {
-  window.onload = () => initCanvas();
-  drawMode = true;
 }

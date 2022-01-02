@@ -6,12 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simple Image Server</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
     </style>
     <script src="svg-inject.min.js"></script>
   </head>
   <body>
+    <div id="cursor"></div>
     <div class="realRoot">
       <div class="root"></div>
       <div class="modal">
@@ -28,7 +30,6 @@
         <img class="spinner" src="img/rotate-cw.svg" onload="SVGInject(this)" />
         <div class="imageContainer">
           <div class="wrapper">
-            <div id="cursor"></div>
             <canvas class="mainCanvas"></canvas>
             <img class="image" />
           </div>

@@ -287,6 +287,8 @@ function hideModal() {
 
   document.body.style.overflow = 'unset';
 
+  points = [];
+  toggleDrawing(false);
   updateCheckboxes();
 }
 
@@ -322,8 +324,9 @@ function hideFolderModal() {
   document.body.style.overflow = 'unset';
 }
 
-function toggleDrawing() {
-  drawMode = !drawMode;
+function toggleDrawing(value) {
+  if (value !== undefined) drawMode = value;
+  else drawMode = !drawMode;
 
   if (drawMode && uiTimer) clearTimeout(uiTimer);
   else showUI();

@@ -1,0 +1,15 @@
+{
+  "name": "Screenshots",
+  "theme_color": "#77ccff",
+  "background_color": "#77ccff",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "img/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

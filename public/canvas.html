@@ -6,9 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Canvas Example</title>
     <script src="svg-inject.min.js"></script>
+    <script>
+      window.onload = () => {
+        initCanvas();
+        drawMode = true;
+      };
+    </script>
   </head>
-  <body>
-    <div id="container" style="position: relative">
+  <body style="margin: 25px">
+    <div id="container">
       <canvas style="border: 1px solid black; cursor: none; touch-action: none"></canvas>
       <div
         id="cursor"

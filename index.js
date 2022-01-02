@@ -186,6 +186,11 @@ app.get('/imageList', (req, res) => {
   generateThumbs().then(() => res.json(getImages()));
 });
 
+// Simple health check endpoint (if it is running, the server will respond)
+app.get('/status', (req, res) => {
+  res.sendStatus(200);
+});
+
 // Only enable write access if specified by user
 if (write) {
   app.delete('/image', (req, res) => {
