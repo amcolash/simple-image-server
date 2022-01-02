@@ -45,7 +45,11 @@ function initCanvas(canvasEl) {
     lastType = e.pointerType;
 
     let pressure = 1;
-    if (e.pointerType === 'pen') pressure = Number.parseFloat(Math.min(1.75, Math.max(0.35, e.pressure * 3)).toFixed(2));
+    if (e.pointerType === 'pen') {
+      // Reduce the ballon-tail effect on drawing
+      const newPressure = Number.parseFloat(Math.min(1.75, Math.max(0.35, e.pressure * 3)).toFixed(2));
+      pressure = 0.25 * newPressure + 0.75 * lastPressure;
+    }
 
     let canvasXRatio = 1;
     let canvasYRatio = 1;

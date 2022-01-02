@@ -19,7 +19,9 @@ button {
 /* Write mode enabled */
 .realRoot.write .bottomButtons,
 .realRoot.write .card input[type='checkbox'],
-.realRoot.write .toolbar .remove {
+.realRoot.write .toolbar .remove,
+.realRoot.write .toolbar .capture,
+.realRoot.write .toolbar .drawing {
   display: flex;
 }
 
@@ -153,7 +155,10 @@ button {
   z-index: 1;
 }
 
-.modal .toolbar .remove {
+.modal .toolbar .remove,
+.modal .toolbar .capture,
+.modal .toolbar .drawing,
+#stats {
   display: none;
 }
 
@@ -215,6 +220,7 @@ button {
   top: 50%;
   left: 16px;
   transform: translateY(-50%);
+  z-index: 1;
 }
 
 .modal .right {
@@ -222,6 +228,7 @@ button {
   top: 50%;
   right: 16px;
   transform: translateY(-50%);
+  z-index: 1;
 }
 
 .folderModal {

@@ -1,6 +1,6 @@
 {
   "name": "@amcolash/simple-image-server",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "description": "A small server that hosts images (similar to simplehttpserver)",
   "main": "index.js",
   "bin": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "nodemon -e js --exec \"node index.js -p 3000 -c .cert/cert.pem -k .cert/privkey.pem -w test/\"",
-    "basic": "nodemon -e js --exec \"node index.js -p 3000 test/\"",
+    "basic": "nodemon -e js --exec \"node index.js -p 3000 -c .cert/cert.pem -k .cert/privkey.pem test/\"",
     "start-win": "nodemon -e js --exec \"node index.js -p 3000 -c .cert/cert.pem -k .cert/privkey.pem -w ~/Videos/Captures/\""
   },
   "repository": {
