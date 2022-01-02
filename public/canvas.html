@@ -5,23 +5,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Canvas Example</title>
+    <script src="svg-inject.min.js"></script>
   </head>
   <body>
-    <canvas style="border: 1px solid black; cursor: none; touch-action: none"></canvas>
-    <div
-      id="cursor"
-      style="
-        outline: 1px solid black;
-        border-radius: 100%;
-        visibility: hidden;
-        position: absolute;
-        left: 0px;
-        top: 0px;
-        pointer-events: none;
-      "
-    ></div>
+    <div id="container" style="position: relative">
+      <canvas style="border: 1px solid black; cursor: none; touch-action: none"></canvas>
+      <div
+        id="cursor"
+        style="
+          outline: 1px solid black;
+          border-radius: 100%;
+          visibility: hidden;
+          position: absolute;
+          left: 0px;
+          top: 0px;
+          pointer-events: none;
+        "
+      ></div>
+    </div>
     <div id="palette" style="display: flex; margin: 10px 0"></div>
-    <button id="clear">Clear</button>
     <button id="redraw">Redraw</button>
     <div id="stats"></div>
 

@@ -1,8 +1,13 @@
-const markerSize = 4;
-const eraserSize = 9;
+let markerSize = 4;
+let eraserSize = 9;
 
-const width = 600;
+const width = 500;
 const height = width;
+let examplePage;
+
+let drawMode;
+
+const colors = ['black', 'red', 'orange', 'yellow', 'lime', 'green', 'blue', 'indigo', 'purple', 'white', 'transparent'];
 
 let lastX = -1;
 let lastY = -1;
@@ -15,38 +20,61 @@ let lastColor;
 
 let color = 'black';
 
-function init() {
-  const canvas = document.querySelector('canvas');
+function initCanvas(canvasEl) {
+  examplePage = typeof currentImages === 'undefined';
+
+  const canvas = canvasEl || document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
 
-  canvas.width = width;
-  canvas.height = height;
+  if (!canvasEl) {
+    canvas.width = width;
+    canvas.height = height;
+  }
+
+  if (!examplePage) {
+    const serverScalar = 6;
+    markerSize *= serverScalar;
+    eraserSize *= serverScalar;
+  }
 
   canvas.addEventListener('pointermove', (e) => {
-    if (!e.isPrimary) return;
+    if (!e.isPrimary || !drawMode) return;
     if (e.pointerType !== lastType && Date.now() - lastTime < 1000) return;
 
     lastTime = Date.now();
     lastType = e.pointerType;
 
-    const pressure = Number.parseFloat(Math.min(1.5, Math.max(0.5, e.pressure * 3)).toFixed(2));
+    let pressure = 1;
+    if (e.pointerType === 'pen') pressure = Number.parseFloat(Math.min(1.75, Math.max(0.35, e.pressure * 3)).toFixed(2));
+
+    let canvasXRatio = 1;
+    let canvasYRatio = 1;
+    if (!examplePage) {
+      const canvasSize = canvas.getBoundingClientRect();
+      const img = currentImages[currentIndex];
+
+      canvasXRatio = img.dimensions.width / canvasSize.width;
+      canvasYRatio = img.dimensions.height / canvasSize.height;
+    }
+    let avgRatio = (canvasXRatio + canvasYRatio) / 2;
 
     const cursor = document.querySelector('#cursor');
     cursor.style.visibility = 'visible';
 
     if (color === 'transparent') {
-      const scaledSize = eraserSize * pressure * 1.5;
-      cursor.style.transform = `translate(${e.clientX - 0.5 * scaledSize}px, ${e.clientY - 0.5 * scaledSize}px)`;
+      const scaledSize = eraserSize * pressure * 1.5 * (1 / avgRatio);
+      cursor.style.transform = `translate(${e.offsetX}px, ${e.offsetY}px)`;
 
-      cursor.style.width = scaledSize + 'px';
-      cursor.style.height = scaledSize + 'px';
+      cursor.style.padding = scaledSize / 2 + 'px';
     } else {
-      const scaledSize = markerSize * pressure;
-      cursor.style.transform = `translate(${e.clientX - 0.5 * scaledSize}px, ${e.clientY - 0.5 * scaledSize}px)`;
+      const scaledSize = markerSize * pressure * (1 / avgRatio);
+      cursor.style.transform = `translate(${e.offsetX}px, ${e.offsetY}px)`;
 
-      cursor.style.width = scaledSize + 'px';
-      cursor.style.height = scaledSize + 'px';
+      cursor.style.padding = scaledSize / 2 + 'px';
     }
+
+    const canvasX = e.offsetX * canvasXRatio;
+    const canvasY = e.offsetY * canvasYRatio;
 
     if (e.buttons === 1) {
       if (lastX !== -1 && lastY !== -1) {
@@ -66,15 +94,15 @@ function init() {
           ctx.globalCompositeOperation = 'source-over';
 
           ctx.moveTo(lastX, lastY);
-          ctx.lineTo(e.offsetX, e.offsetY);
+          ctx.lineTo(canvasX, canvasY);
           ctx.stroke();
         } else {
           ctx.globalCompositeOperation = 'destination-out';
 
           const steps = 10;
           for (let i = 0; i < steps; i++) {
-            const x = lerp(lastX, e.offsetX, i / steps);
-            const y = lerp(lastY, e.offsetY, i / steps);
+            const x = lerp(lastX, canvasX, i / steps);
+            const y = lerp(lastY, canvasY, i / steps);
 
             ctx.arc(x, y, eraserSize * pressure, 0, Math.PI * 2);
             ctx.fill();
@@ -82,8 +110,8 @@ function init() {
         }
       }
 
-      lastX = e.offsetX;
-      lastY = e.offsetY;
+      lastX = canvasX;
+      lastY = canvasY;
     } else if (e.buttons === 0) {
       if (lastX !== -1 && lastY !== -1) {
         points.push([lastX, lastY, lastPressure]);
@@ -115,16 +143,18 @@ function init() {
     cursor.style.visibility = 'hidden';
   });
 
-  const clearButton = document.querySelector('#clear');
-  clearButton.addEventListener('click', () => clear(true));
-
   const redrawButton = document.querySelector('#redraw');
-  redrawButton.addEventListener('click', () => draw);
+  if (redrawButton) redrawButton.addEventListener('click', () => draw);
 
+  createPalette(canvas);
+  updateColor('black');
+}
+
+function createPalette(canvasEl) {
   const palette = document.querySelector('#palette');
-  const colors = ['black', 'red', 'orange', 'yellow', 'lime', 'green', 'blue', 'indigo', 'purple', 'transparent'];
   const size = 28.1;
 
+  palette.replaceChildren();
   colors.forEach((c, i) => {
     const swatch = document.createElement('div');
 
@@ -136,13 +166,41 @@ function init() {
     swatch.style.width = size + 'px';
     swatch.style.height = size + 'px';
     swatch.style.margin = size / 5 + 'px';
+    swatch.style.position = 'relative';
+    swatch.style.overflow = 'hidden';
 
     if (i === 0) swatch.style.marginLeft = 0;
+
+    if (c === 'transparent') {
+      const line = document.createElement('div');
+      line.style.border = '1px solid red';
+      line.style.transform = 'rotateZ(-45deg)';
+      line.style.position = 'absolute';
+      line.style.left = size * -0.23 + 'px';
+      line.style.top = size * 0.46 + 'px';
+      line.style.width = size * 1.4 + 'px';
+
+      swatch.appendChild(line);
+    }
 
     palette.appendChild(swatch);
   });
 
-  updateColor('black');
+  const reset = document.createElement('button');
+  reset.className = 'resetButton';
+  reset.style.background = 'none';
+  reset.style.border = 'none';
+  reset.addEventListener('click', () => clear(true, canvasEl));
+
+  const icon = document.createElement('img');
+  icon.src = 'img/x-square.svg';
+  icon.style.width = size + 'px';
+  icon.style.height = size + 'px';
+
+  SVGInject(icon);
+
+  reset.appendChild(icon);
+  palette.appendChild(reset);
 }
 
 function draw(canvasEl, pointString) {
@@ -213,21 +271,19 @@ function updateColor(newColor) {
 }
 
 function updateStats() {
-  const stats = document.querySelector('#stats');
-
-  if (stats) {
-    let raw = JSON.stringify(points);
-    let compressed = LZString.compress(raw);
-
-    stats.innerHTML = `Raw: ${raw.length}<br/>Compressed: ${compressed.length}<br/>Ratio: ${(raw.length / compressed.length).toFixed(3)}`;
-  }
+  // const stats = document.querySelector('#stats');
+  // if (stats) {
+  //   let raw = JSON.stringify(points);
+  //   let compressed = LZString.compress(raw);
+  //   stats.innerHTML = `Raw: ${raw.length}<br/>Compressed: ${compressed.length}<br/>Ratio: ${(raw.length / compressed.length).toFixed(3)}`;
+  // }
 }
 
 function clear(resetPoints, canvasEl) {
   const canvas = canvasEl || document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
 
-  ctx.clearRect(0, 0, width, height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (resetPoints) points = [];
 
@@ -238,4 +294,7 @@ function lerp(v0, v1, t) {
   return v0 * (1 - t) + v1 * t;
 }
 
-window.onload = init;
+if (examplePage) {
+  window.onload = () => initCanvas();
+  drawMode = true;
+}

@@ -9,13 +9,14 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
     </style>
-    <script src="https://unpkg.com/@iconfu/svg-inject@1.2.3/dist/svg-inject.min.js"></script>
+    <script src="svg-inject.min.js"></script>
   </head>
   <body>
     <div class="realRoot">
       <div class="root"></div>
       <div class="modal">
         <div class="toolbar ui">
+          <div id="stats"></div>
           <!-- <button class="icon rotate" onclick="rotateImage()"><img src="img/rotate-cw.svg" onload="SVGInject(this)" /></button> -->
           <button class="icon drawing" onclick="toggleDrawing();"><img src="img/edit-3.svg" onload="SVGInject(this)" /></button>
           <button class="icon capture" onclick="capture(true);"><img src="img/camera.svg" onload="SVGInject(this)" /></button>
@@ -27,6 +28,7 @@
         <img class="spinner" src="img/rotate-cw.svg" onload="SVGInject(this)" />
         <div class="imageContainer">
           <div class="wrapper">
+            <div id="cursor"></div>
             <canvas class="mainCanvas"></canvas>
             <img class="image" />
           </div>
@@ -34,6 +36,9 @@
           <img class="nextImage" style="display: none" />
         </div>
         <div class="pager ui"></div>
+        <div class="paletteContainer">
+          <div id="palette"></div>
+        </div>
       </div>
       <div class="folderModal">
         <div class="content">

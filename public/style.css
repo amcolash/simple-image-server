@@ -97,6 +97,7 @@ button {
   max-height: calc(100vh - 2em);
   display: flex;
   justify-content: center;
+  user-select: none;
 }
 
 .modal .imageContainer .wrapper {
@@ -109,6 +110,7 @@ button {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  touch-action: none;
 }
 
 .modal .image {
@@ -117,10 +119,22 @@ button {
   object-fit: contain;
 }
 
+.modal #cursor {
+  outline: 1px solid black;
+  border-radius: 100%;
+  visibility: hidden;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  pointer-events: none;
+}
+
 .modal .icon {
   color: white;
   cursor: pointer;
-  padding: 15px;
+  padding: 8px;
+  margin: 7px;
+  border-radius: 5px;
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8));
 }
 
@@ -129,10 +143,29 @@ button {
   position: absolute;
   top: 16px;
   right: 16px;
+  z-index: 1;
 }
 
 .modal .toolbar .remove {
   display: none;
+}
+
+.modal .paletteContainer {
+  position: absolute;
+  bottom: 28px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.modal #palette {
+  display: none;
+  justify-content: center;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 6px;
+  box-shadow: 0 0 10px black;
 }
 
 .modal .pager {
