@@ -181,7 +181,8 @@ button {
   margin-bottom: 8px;
 }
 
-.modal #palette {
+.modal #palette,
+.modal #stats {
   display: flex;
   justify-content: center;
   padding: 8px 12px;
@@ -193,6 +194,7 @@ button {
 .modal .pager {
   position: absolute;
   bottom: 0;
+  z-index: 2;
   height: 5em;
   width: calc(100vw - 8px);
   padding: 4px;
