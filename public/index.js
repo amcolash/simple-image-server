@@ -181,12 +181,12 @@ function createImage(img, i) {
   div.appendChild(imgEl);
   imgEl.src = img.thumb;
 
-  const canvasEl = document.createElement('canvas');
-  canvasEl.width = img.dimensions.width;
-  canvasEl.height = img.dimensions.height;
-  div.appendChild(canvasEl);
-
   if (img.drawing) {
+    const canvasEl = document.createElement('canvas');
+    canvasEl.width = img.dimensions.width;
+    canvasEl.height = img.dimensions.height;
+    div.appendChild(canvasEl);
+
     draw(canvasEl, img.drawing);
   }
 
@@ -199,6 +199,9 @@ function createImage(img, i) {
 
   const pager = document.querySelector('.pager');
 
+  const pagerWrapper = document.createElement('div');
+  pagerWrapper.className = 'pagerWrapper';
+
   const pagerImg = document.createElement('img');
   pagerImg.src = img.thumb;
   pagerImg.onclick = () => {
@@ -206,7 +209,17 @@ function createImage(img, i) {
     showModal();
   };
 
-  pager.appendChild(pagerImg);
+  if (img.drawing) {
+    const canvasEl = document.createElement('canvas');
+    canvasEl.width = img.dimensions.width;
+    canvasEl.height = img.dimensions.height;
+    pagerWrapper.appendChild(canvasEl);
+
+    draw(canvasEl, img.drawing);
+  }
+
+  pagerWrapper.appendChild(pagerImg);
+  pager.appendChild(pagerWrapper);
 }
 
 function createDir(d, label) {
