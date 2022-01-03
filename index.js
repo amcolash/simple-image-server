@@ -335,6 +335,11 @@ if (write) {
       saveData();
 
       res.sendStatus(200);
+    } else if (req.body.path) {
+      data.drawings[req.body.path] = undefined;
+      saveData();
+
+      res.sendStatus(200);
     } else {
       console.error('Drawing missing parameters');
       res.sendStatus(500);

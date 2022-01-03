@@ -386,7 +386,7 @@ function postDrawing() {
       },
       body: JSON.stringify({
         path: img.rel,
-        data: compressed,
+        data: points.length > 0 ? compressed : undefined,
       }),
     })
       .then(() => {
