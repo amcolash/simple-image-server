@@ -62,7 +62,8 @@ try {
   process.exit(1);
 }
 
-let data = { drawings: {} };
+const defaultData = { drawings: {} };
+let data = JSON.parse(JSON.stringify(defaultData));
 const dataFile = join(dir, 'data.json');
 
 loadData();
@@ -128,19 +129,28 @@ function getImages() {
 }
 
 function loadData() {
-  if (existsSync(dataFile)) {
-    data = JSON.parse(readFileSync(dataFile));
-  } else {
-    saveData(true);
+  try {
+    if (existsSync(dataFile)) {
+      data = JSON.parse(readFileSync(dataFile));
+    } else {
+      saveData(true);
+    }
+  } catch (err) {
+    console.error(err);
+    data = JSON.parse(JSON.stringify(defaultData));
   }
 }
 
 function saveData(sync) {
-  if (sync) writeFileSync(dataFile, JSON.stringify(data));
-  else
-    writeFile(dataFile, JSON.stringify(data), (err) => {
-      if (err) console.error(err);
-    });
+  try {
+    if (sync) writeFileSync(dataFile, JSON.stringify(data));
+    else
+      writeFile(dataFile, JSON.stringify(data), (err) => {
+        if (err) console.error(err);
+      });
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 const app = express();

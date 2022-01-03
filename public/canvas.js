@@ -7,7 +7,8 @@ let examplePage;
 
 let drawMode;
 
-const colors = ['black', 'red', 'orange', 'yellow', 'lime', 'green', 'blue', 'indigo', 'purple', 'white', 'transparent'];
+const colors = ['#444444', '#ff6663', '#feb144', '#fdfd97', '#9ee09e', '#9ec1cf', '#cc99c9', '#eeeeee', 'transparent'];
+const defaultColor = colors[2];
 
 let lastX = -1;
 let lastY = -1;
@@ -153,7 +154,7 @@ function initCanvas(canvasEl) {
   if (redrawButton) redrawButton.addEventListener('click', () => draw);
 
   createPalette(canvas);
-  updateColor('black');
+  updateColor(defaultColor);
 }
 
 function createPalette(canvasEl) {
@@ -168,6 +169,7 @@ function createPalette(canvasEl) {
     swatch.addEventListener('click', (e) => updateColor(c));
 
     swatch.style.border = '1px solid black';
+    swatch.style.borderRadius = '2px';
     swatch.style.background = c;
     swatch.style.width = size + 'px';
     swatch.style.height = size + 'px';
@@ -192,21 +194,46 @@ function createPalette(canvasEl) {
     palette.appendChild(swatch);
   });
 
+  const spacer = document.createElement('div');
+  spacer.style.borderLeft = '1px solid #777';
+  spacer.style.margin = '4px 2px 4px 8px';
+  palette.appendChild(spacer);
+
+  // Reset Button
   const reset = document.createElement('button');
   reset.className = 'resetButton';
   reset.style.background = 'none';
   reset.style.border = 'none';
+
   reset.addEventListener('click', () => clear(true, canvasEl));
 
-  const icon = document.createElement('img');
-  icon.src = 'img/x-square.svg';
-  icon.style.width = size + 'px';
-  icon.style.height = size + 'px';
+  const resetIcon = document.createElement('img');
+  resetIcon.src = 'img/trash-2.svg';
+  resetIcon.style.width = size + 'px';
+  resetIcon.style.height = size + 'px';
 
-  SVGInject(icon);
+  SVGInject(resetIcon);
 
-  reset.appendChild(icon);
+  reset.appendChild(resetIcon);
   palette.appendChild(reset);
+
+  // Close Button
+  const close = document.createElement('button');
+  close.className = 'closeButton';
+  close.style.background = 'none';
+  close.style.border = 'none';
+
+  close.addEventListener('click', () => toggleDrawing(false));
+
+  const closeIcon = document.createElement('img');
+  closeIcon.src = 'img/x.svg';
+  closeIcon.style.width = size + 'px';
+  closeIcon.style.height = size + 'px';
+
+  SVGInject(closeIcon);
+
+  close.appendChild(closeIcon);
+  palette.appendChild(close);
 }
 
 function draw(canvasEl, pointString) {
@@ -270,8 +297,14 @@ function updateColor(newColor) {
   color = newColor;
 
   const colors = document.querySelectorAll('.swatch');
+
   Array.from(colors).forEach((c) => {
-    if (c.style.background === newColor) c.style.outline = 'solid 3px #777';
+    if (
+      c.style.background.indexOf('rgb') === -1
+        ? c.style.background === newColor
+        : '#' + rgbHex(c.style.background).toLowerCase() === newColor.toLowerCase()
+    )
+      c.style.outline = 'solid 3px #777';
     else c.style.outline = 'none';
   });
 }
@@ -281,7 +314,7 @@ function updateStats() {
   if (stats) {
     let raw = JSON.stringify(points);
     let compressed = LZString.compress(raw);
-    stats.innerHTML = `Raw: ${raw.length}<br/>Compressed: ${compressed.length}<br/>Ratio: ${(raw.length / compressed.length).toFixed(3)}`;
+    stats.innerHTML = `Raw: ${raw.length}, Compressed: ${compressed.length}, Ratio: ${(raw.length / compressed.length).toFixed(2)}`;
   }
 }
 

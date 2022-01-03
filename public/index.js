@@ -1,10 +1,10 @@
 const server = window.location.origin;
-const refreshTime = 2 * 60 * 1000;
+const refreshTime = 1 * 60 * 1000;
 
 let currentDir = '.';
 let currentImages = [];
 let currentDirs = [];
-let currentIndex = 0;
+let currentIndex = -1;
 
 let updateTimer;
 let uiTimer;
@@ -55,6 +55,13 @@ function init() {
 
   const modalImageContainer = document.querySelector('.modal .imageContainer');
   const canvas = document.querySelector('.mainCanvas');
+
+  canvas.addEventListener('swiped-right', () => {
+    if (!drawMode) previous();
+  });
+  canvas.addEventListener('swiped-left', () => {
+    if (!drawMode) next();
+  });
 
   const modal = document.querySelector('.modal');
   modal.addEventListener('click', (e) => {
@@ -144,6 +151,16 @@ function parseImages(res) {
   // Toggle write mode class based on if the server supports it or not
   const realRoot = document.querySelector('.realRoot');
   realRoot.classList.toggle('write', res.write);
+
+  if (currentIndex !== -1) {
+    const img = currentImages[currentIndex];
+    const mainCanvas = document.querySelector('.mainCanvas');
+
+    if (img.drawing) {
+      points = JSON.parse(LZString.decompressFromUTF16(img.drawing));
+      draw(mainCanvas);
+    }
+  }
 
   updateCheckboxes();
 }
@@ -244,8 +261,6 @@ function showModal() {
   modalImage.src = modalImage.src = img.file;
 
   const mainCanvas = document.querySelector('.mainCanvas');
-  const ctx = mainCanvas.getContext('2d');
-  ctx.clearRect(0, 0, 4000, 4000);
 
   mainCanvas.width = img.dimensions.width;
   mainCanvas.height = img.dimensions.height;
@@ -287,6 +302,7 @@ function hideModal() {
 
   document.body.style.overflow = 'unset';
 
+  currentIndex = -1;
   points = [];
   toggleDrawing(false);
   updateCheckboxes();
@@ -328,43 +344,43 @@ function toggleDrawing(value) {
   if (value !== undefined) drawMode = value;
   else drawMode = !drawMode;
 
-  if (drawMode && uiTimer) clearTimeout(uiTimer);
+  if (drawMode) hideUI();
   else showUI();
 
-  const drawIcon = document.querySelector('.drawing');
-  drawIcon.style.color = drawMode ? 'black' : '';
-  drawIcon.style.background = drawMode ? 'white' : '';
+  // const uiEls = document.querySelectorAll('.pager, .right, .left');
+  // Array.from(uiEls).forEach((e) => (e.style.display = drawMode ? 'none' : 'unset'));
 
-  const uiEls = document.querySelectorAll('.pager, .right, .left');
-  Array.from(uiEls).forEach((e) => (e.style.display = drawMode ? 'none' : 'unset'));
-
-  const paletteEl = document.querySelector('.modal #palette');
-  paletteEl.style.display = drawMode ? 'flex' : 'none';
-
-  const raw = JSON.stringify(points);
-  const compressed = LZString.compressToUTF16(raw);
+  const paletteEl = document.querySelector('.modal .paletteContainer');
+  paletteEl.style.opacity = drawMode ? 1 : 0;
 
   const mainCanvas = document.querySelector('.mainCanvas');
-  draw(mainCanvas, compressed);
-
   mainCanvas.style.cursor = drawMode ? 'none' : 'unset';
+  mainCanvas.style.touchAction = drawMode ? 'none' : 'unset';
 
-  // const img = currentImages[currentIndex];
-  // fetch(`${server}/drawing`, {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({
-  //     path: img.rel,
-  //     data: compressed,
-  //   }),
-  // })
-  //   .then(() => {
-  //     const mainCanvas = document.querySelector('.mainCanvas');
-  //     draw(mainCanvas, compressed);
-  //   })
-  //   .catch((err) => console.error(err));
+  if (!drawMode) postDrawing();
+}
+
+function postDrawing() {
+  const raw = JSON.stringify(points);
+  const compressed = LZString.compressToUTF16(raw);
+  const img = currentImages[currentIndex];
+
+  if (img) {
+    fetch(`${server}/drawing`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        path: img.rel,
+        data: compressed,
+      }),
+    })
+      .then(() => {
+        updateImages();
+      })
+      .catch((err) => console.error(err));
+  }
 }
 
 // function rotateImage() {
