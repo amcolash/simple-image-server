@@ -119,7 +119,7 @@ function getImages() {
         rel,
         dir: dirname(rel),
         created: statSync(f).birthtime,
-        drawing: data.drawings[rel],
+        drawing: data.drawings[rel.replace(/\\/g, '/')],
         dimensions,
       };
     }),
