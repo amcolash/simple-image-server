@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const compression = require('compression');
+const cors = require('cors');
 const express = require('express');
 const { existsSync, mkdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFile, writeFileSync } = require('fs');
 const { getAllFilesSync } = require('get-all-files');
@@ -157,6 +158,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(compression());
+app.use(cors());
 
 let creds;
 if (argv.c && argv.k) {

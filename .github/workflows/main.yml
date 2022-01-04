@@ -12,3 +12,24 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           access: 'public'
+
+  pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Copy assets
+        run: |
+          mkdir pages
+          cp public/choose.html pages/index.html
+          cp public/manifest.json public/font.css public/roboto.woff2 pages/
+
+          mkdir pages/js
+          cp public/js/choose.js public/js/svg-inject.min.js
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.7
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: pages # The folder the action should deploy.

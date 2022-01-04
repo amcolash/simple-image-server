@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Choose a server</title>
+
+    <script src="js/svg-inject.min.js"></script>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="font.css" />
+
+    <style>
+      body {
+        background: #77ccff;
+      }
+
+      button,
+      label,
+      input {
+        margin-top: 8px;
+      }
+
+      button {
+        background: none;
+        padding: 6px;
+        border: 1px solid black;
+      }
+
+      #icon {
+        width: 192px;
+        height: 192px;
+      }
+
+      .remove {
+        margin-left: 8px;
+      }
+
+      .root,
+      .redirect {
+        display: none;
+        flex-direction: column;
+      }
+
+      .redirect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #77ccff;
+        font-size: 24px;
+
+        align-items: center;
+        justify-content: center;
+      }
+
+      .redirectUrl {
+        margin-bottom: 8px;
+      }
+
+      #redirectCancel {
+        margin-top: 32px;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      #loading {
+        color: white;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 128px;
+        height: 128px;
+        animation: spin 2s linear infinite;
+      }
+
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <img src="img/refresh-cw.svg" alt="loading spinner" id="loading" onload="SVGInject(this)" />
+
+    <div class="root">
+      <h1>Choose a Server</h1>
+
+      <div class="list"></div>
+
+      <div class="form">
+        <h2>Add a New Server</h2>
+        <label for="name">Name <input type="text" id="name" /></label>
+        <br />
+        <label for="address">Address <input type="text" id="address" /></label>
+        <br />
+        <button id="add">Add</button>
+      </div>
+    </div>
+
+    <div class="redirect">
+      <img src="img/icon.png" id="icon" alt="Camera Icon" />
+      <div class="redirectUrl"></div>
+      <div class="timer"></div>
+      <button id="redirectCancel">Cancel</button>
+    </div>
+
+    <script src="js/choose.js"></script>
+  </body>
+</html>
