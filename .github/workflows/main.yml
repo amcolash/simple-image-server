@@ -24,7 +24,6 @@ jobs:
           mkdir pages
           cp public/choose.html pages/index.html
           cp public/manifest.json public/font.css public/roboto.woff2 pages/
-
           mkdir pages/js
           cp public/js/choose.js public/js/svg-inject.min.js
 
