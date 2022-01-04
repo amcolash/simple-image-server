@@ -191,6 +191,7 @@ const options = {};
 // const options = { maxAge: 60 * 60 * 1000 };
 
 app.use(express.static(join(__dirname, 'public')));
+app.use('/chooser', express.static(join(__dirname, 'chooser')));
 app.use('/images', express.static(dir, options));
 app.use('/thumbs', express.static(tmp, options));
 
