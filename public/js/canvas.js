@@ -244,7 +244,7 @@ function draw(canvasEl, pointString) {
 
   let currentColor;
 
-  let allPoints = points;
+  let allPoints = points || [];
   try {
     if (pointString) allPoints = JSON.parse(LZString.decompressFromUTF16(pointString));
   } catch (err) {

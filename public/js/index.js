@@ -354,6 +354,8 @@ function hideFolderModal() {
 }
 
 function toggleDrawing(value) {
+  let prevMode = drawMode || false;
+
   if (value !== undefined) drawMode = value;
   else drawMode = !drawMode;
 
@@ -370,7 +372,7 @@ function toggleDrawing(value) {
   mainCanvas.style.cursor = drawMode ? 'none' : 'unset';
   mainCanvas.style.touchAction = drawMode ? 'none' : 'unset';
 
-  if (!drawMode) postDrawing();
+  if (!drawMode && prevMode !== drawMode && points) postDrawing();
 }
 
 function postDrawing() {
