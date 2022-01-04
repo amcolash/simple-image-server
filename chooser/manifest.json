@@ -2,7 +2,7 @@
   "name": "Screenshots",
   "theme_color": "#77ccff",
   "background_color": "#77ccff",
-  "display": "standalone",
+  "display": "fullscreen",
   "start_url": "/simple-image-server",
   "icons": [
     {
