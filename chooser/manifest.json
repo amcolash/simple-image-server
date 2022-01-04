@@ -3,8 +3,7 @@
   "theme_color": "#77ccff",
   "background_color": "#77ccff",
   "display": "standalone",
-  "scope": "/",
-  "start_url": "/",
+  "start_url": "/simple-image-server",
   "icons": [
     {
       "src": "img/icon.png",
