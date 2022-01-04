@@ -285,7 +285,7 @@ function showModal() {
 
   document.body.style.overflow = 'hidden';
 
-  Array.from(document.querySelectorAll('.modal .pager img')).forEach((e, i) => {
+  Array.from(document.querySelectorAll('.modal .pager .pagerWrapper')).forEach((e, i) => {
     if (i === currentIndex) {
       e.style.outline = '3px solid white';
       e.scrollIntoView({ behavior: 'smooth' });
