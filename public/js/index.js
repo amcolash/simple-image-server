@@ -315,9 +315,10 @@ function hideModal() {
 
   document.body.style.overflow = 'unset';
 
-  currentIndex = -1;
-  points = [];
   toggleDrawing(false);
+  points = [];
+
+  currentIndex = -1;
   updateCheckboxes();
 }
 
