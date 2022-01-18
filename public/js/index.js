@@ -94,6 +94,8 @@ function parseImages(res) {
   const dirs = new Set();
   const images = [];
 
+  const savedPagerScroll = pager.scrollLeft;
+
   // console.log(res);
 
   res.files.forEach((f) => {
@@ -156,7 +158,7 @@ function parseImages(res) {
     const realRoot = document.querySelector('.realRoot');
     realRoot.classList.toggle('write', res.write);
 
-    if (currentIndex !== -1) {
+    if (currentIndex !== -1 && currentImages[currentIndex]) {
       const img = currentImages[currentIndex];
       const mainCanvas = document.querySelector('.mainCanvas');
 
@@ -165,6 +167,22 @@ function parseImages(res) {
         draw(mainCanvas);
       }
     }
+
+    const pagerImages = Array.from(document.querySelectorAll('.modal .pager .pagerWrapper img'));
+    const promises = pagerImages.map((i) => {
+      return new Promise((resolve, reject) => {
+        i.onload = resolve;
+      });
+    });
+
+    Promise.all(promises).then(() => {
+      pager.scrollLeft = savedPagerScroll;
+      Array.from(document.querySelectorAll('.modal .pager .pagerWrapper')).forEach((e, i) => {
+        if (i === currentIndex) {
+          e.style.outline = '3px solid white';
+        } else e.style.outlineColor = 'unset';
+      });
+    });
 
     updateCheckboxes();
   }
@@ -285,10 +303,8 @@ function showModal() {
   mainCanvas.width = img.dimensions.width;
   mainCanvas.height = img.dimensions.height;
 
-  if (img.drawing) {
-    points = JSON.parse(LZString.decompressFromUTF16(img.drawing));
-    draw(mainCanvas);
-  }
+  points = img.drawing ? JSON.parse(LZString.decompressFromUTF16(img.drawing)) : [];
+  draw(mainCanvas);
 
   document.body.style.overflow = 'hidden';
 
@@ -306,8 +322,8 @@ function showModal() {
     const prevImg = document.querySelector('.prevImage');
     const nextImg = document.querySelector('.nextImage');
 
-    prevImg.src = img.file;
-    nextImg.src = img.file;
+    prevImg.src = currentImages[prev].file;
+    nextImg.src = currentImages[next].file;
   };
 
   showUI();
@@ -331,7 +347,7 @@ function hideModal() {
 
 function showUI() {
   if (uiTimer) clearTimeout(uiTimer);
-  // uiTimer = setTimeout(hideUI, 5000);
+  uiTimer = setTimeout(hideUI, 5000);
 
   Array.from(document.querySelectorAll('.ui')).forEach((e) => e.classList.toggle('hidden', false));
 }

@@ -89,6 +89,7 @@ button {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s;
+  user-select: none;
 }
 
 .modal .imageContainer {
@@ -174,6 +175,7 @@ button {
   flex-direction: column;
   opacity: 0;
   transition: opacity 0.25s;
+  z-index: 3;
 }
 
 .modal #stats {
