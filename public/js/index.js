@@ -88,13 +88,8 @@ function parseImages(res) {
   const selected = getSelected();
 
   const root = document.querySelector('.root');
-  root.replaceChildren();
-
   const pager = document.querySelector('.pager');
-  pager.replaceChildren();
-
   const folders = document.querySelector('.folderModal .folders');
-  folders.replaceChildren();
 
   const dirs = new Set();
   const images = [];
@@ -119,50 +114,60 @@ function parseImages(res) {
     }
   });
 
-  currentImages = images;
-  currentDirs = Array.from(dirs);
+  const sortedImages = images.sort((a, b) => a.file.localeCompare(b.file));
+  const sortedCurrentImages = currentImages.sort((a, b) => a.file.localeCompare(b.file));
 
-  if (currentDir !== '.') {
-    const sections = currentDir.split('/');
-    if (sections.length == 1) createDir('.', '../');
-    else {
-      sections.pop();
-      createDir(sections.join('/'), '../');
+  // Only update dom if there were changes to image list
+  if (JSON.stringify(sortedImages) !== JSON.stringify(sortedCurrentImages)) {
+    root.replaceChildren();
+    pager.replaceChildren();
+    folders.replaceChildren();
+
+    currentImages = images;
+    currentDirs = Array.from(dirs);
+
+    if (currentDir !== '.') {
+      const sections = currentDir.split('/');
+      if (sections.length == 1) createDir('.', '../');
+      else {
+        sections.pop();
+        createDir(sections.join('/'), '../');
+      }
     }
-  }
 
-  Array.from(dirs)
-    .sort((a, b) => a.localeCompare(b))
-    .forEach((d) => {
-      createDir(d, d.replace(currentDir + '/', ''));
+    Array.from(dirs)
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((d) => {
+        createDir(d, d.replace(currentDir + '/', ''));
+      });
+
+    images
+      .sort((a, b) => new Date(a.created) - new Date(b.created))
+      .forEach((img, i) => {
+        createImage(img, i);
+      });
+
+    const checked = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]'));
+    checked.forEach((c, i) => {
+      if (selected.indexOf(i) !== -1) c.checked = true;
     });
 
-  images
-    .sort((a, b) => new Date(a.created) - new Date(b.created))
-    .forEach((img, i) => {
-      createImage(img, i);
-    });
+    // Toggle write mode class based on if the server supports it or not
+    const realRoot = document.querySelector('.realRoot');
+    realRoot.classList.toggle('write', res.write);
 
-  const checked = Array.from(document.querySelectorAll('.root .card input[type="checkbox"]'));
-  checked.forEach((c, i) => {
-    if (selected.indexOf(i) !== -1) c.checked = true;
-  });
+    if (currentIndex !== -1) {
+      const img = currentImages[currentIndex];
+      const mainCanvas = document.querySelector('.mainCanvas');
 
-  // Toggle write mode class based on if the server supports it or not
-  const realRoot = document.querySelector('.realRoot');
-  realRoot.classList.toggle('write', res.write);
-
-  if (currentIndex !== -1) {
-    const img = currentImages[currentIndex];
-    const mainCanvas = document.querySelector('.mainCanvas');
-
-    if (img.drawing) {
-      points = JSON.parse(LZString.decompressFromUTF16(img.drawing));
-      draw(mainCanvas);
+      if (img.drawing) {
+        points = JSON.parse(LZString.decompressFromUTF16(img.drawing));
+        draw(mainCanvas);
+      }
     }
-  }
 
-  updateCheckboxes();
+    updateCheckboxes();
+  }
 }
 
 function createImage(img, i) {
@@ -217,6 +222,8 @@ function createImage(img, i) {
 
     draw(canvasEl, img.drawing);
   }
+
+  // console.log(pager.getBoundingClientRect());
 
   pagerWrapper.appendChild(pagerImg);
   pager.appendChild(pagerWrapper);
@@ -324,7 +331,7 @@ function hideModal() {
 
 function showUI() {
   if (uiTimer) clearTimeout(uiTimer);
-  uiTimer = setTimeout(hideUI, 5000);
+  // uiTimer = setTimeout(hideUI, 5000);
 
   Array.from(document.querySelectorAll('.ui')).forEach((e) => e.classList.toggle('hidden', false));
 }
