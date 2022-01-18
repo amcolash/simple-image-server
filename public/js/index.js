@@ -163,7 +163,7 @@ function parseImages(res) {
       const mainCanvas = document.querySelector('.mainCanvas');
 
       if (img.drawing) {
-        points = JSON.parse(LZString.decompressFromUTF16(img.drawing));
+        points = parseDrawing(img.drawing);
         draw(mainCanvas);
       }
     }
@@ -303,7 +303,7 @@ function showModal() {
   mainCanvas.width = img.dimensions.width;
   mainCanvas.height = img.dimensions.height;
 
-  points = img.drawing ? JSON.parse(LZString.decompressFromUTF16(img.drawing)) : [];
+  points = parseDrawing(img.drawing);
   draw(mainCanvas);
 
   document.body.style.overflow = 'hidden';
@@ -438,6 +438,18 @@ function postDrawing() {
 //     }
 //   );
 // }
+
+function parseDrawing(raw) {
+  if (raw) {
+    try {
+      return JSON.parse(LZString.decompressFromUTF16(raw));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  return [];
+}
 
 function removeImage() {
   if (confirm('Are you sure you want to delete this file?')) {
