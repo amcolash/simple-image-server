@@ -205,7 +205,9 @@ function createPalette(canvasEl) {
   reset.style.background = 'none';
   reset.style.border = 'none';
 
-  reset.addEventListener('click', () => clear(true, canvasEl));
+  reset.addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear the drawing?')) clear(true, canvasEl);
+  });
 
   const resetIcon = document.createElement('img');
   resetIcon.src = 'img/trash-2.svg';
