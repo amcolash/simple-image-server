@@ -246,12 +246,12 @@ function draw(canvasEl, pointString) {
 
   let allPoints = points || [];
   try {
-    if (pointString) allPoints = JSON.parse(LZString.decompressFromUTF16(pointString));
+    if (pointString) allPoints = JSON.parse(LZString.decompressFromUTF16(pointString)) || [];
   } catch (err) {
     console.error(err);
   }
 
-  allPoints.forEach((point) => {
+  (allPoints || []).forEach((point) => {
     if (point.length > 0) {
       if (point.length === 4) currentColor = point[3];
       const pressure = point[2];
