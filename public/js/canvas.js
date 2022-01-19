@@ -17,6 +17,7 @@ let lastType;
 let lastPressure = 1;
 
 let points = [];
+let history = [];
 let lastColor;
 
 let color = 'black';
@@ -72,12 +73,14 @@ function initCanvas(canvasEl) {
 
       cursor.style.width = scaledSize + 'px';
       cursor.style.height = scaledSize + 'px';
+      cursor.style.outlineColor = 'black';
     } else {
       const scaledSize = markerSize * pressure * (1 / avgRatio);
       cursor.style.transform = `translate(${e.pageX - 0.5 * scaledSize}px, ${e.pageY - 0.5 * scaledSize}px)`;
 
       cursor.style.width = scaledSize + 'px';
       cursor.style.height = scaledSize + 'px';
+      cursor.style.outlineColor = color;
     }
 
     const canvasX = Math.floor(e.offsetX * canvasXRatio);
@@ -123,6 +126,11 @@ function initCanvas(canvasEl) {
       if (lastX !== -1 && lastY !== -1) {
         points.push([lastX, lastY, lastPressure]);
         points.push([]);
+
+        history.push(JSON.parse(JSON.stringify(points)));
+        if (history.length > 30) history = history.slice(history.length - 30);
+
+        updateUndo();
       }
 
       lastX = -1;
@@ -196,16 +204,34 @@ function createPalette(canvasEl) {
 
   const spacer = document.createElement('div');
   spacer.style.borderLeft = '1px solid #777';
-  spacer.style.margin = '4px 2px 4px 8px';
+  spacer.style.margin = '4px 6px 4px 8px';
   palette.appendChild(spacer);
 
-  // Reset Button
-  const reset = document.createElement('button');
-  reset.className = 'resetButton';
-  reset.style.background = 'none';
-  reset.style.border = 'none';
+  // Undo Button
+  const undoButton = document.createElement('button');
+  undoButton.className = 'undoButton';
+  undoButton.style.background = 'none';
+  undoButton.style.border = 'none';
 
-  reset.addEventListener('click', () => {
+  undoButton.addEventListener('click', () => undo(canvasEl));
+
+  const undoIcon = document.createElement('img');
+  undoIcon.src = 'img/rotate-ccw.svg';
+  undoIcon.style.width = size + 'px';
+  undoIcon.style.height = size + 'px';
+
+  SVGInject(undoIcon);
+
+  undoButton.appendChild(undoIcon);
+  palette.appendChild(undoButton);
+
+  // Reset Button
+  const resetButton = document.createElement('button');
+  resetButton.className = 'resetButton';
+  resetButton.style.background = 'none';
+  resetButton.style.border = 'none';
+
+  resetButton.addEventListener('click', () => {
     if (confirm('Are you sure you want to clear the drawing?')) clear(true, canvasEl);
   });
 
@@ -216,8 +242,8 @@ function createPalette(canvasEl) {
 
   SVGInject(resetIcon);
 
-  reset.appendChild(resetIcon);
-  palette.appendChild(reset);
+  resetButton.appendChild(resetIcon);
+  palette.appendChild(resetButton);
 
   // Close Button
   const close = document.createElement('button');
@@ -228,7 +254,7 @@ function createPalette(canvasEl) {
   close.addEventListener('click', () => toggleDrawing(false));
 
   const closeIcon = document.createElement('img');
-  closeIcon.src = 'img/x.svg';
+  closeIcon.src = 'img/save.svg';
   closeIcon.style.width = size + 'px';
   closeIcon.style.height = size + 'px';
 
@@ -295,6 +321,34 @@ function draw(canvasEl, pointString) {
   });
 }
 
+function undo(canvasEl) {
+  if (history.length > 0) {
+    history.pop();
+
+    if (history.length > 0) {
+      points = history[history.length - 1];
+      draw(canvasEl);
+    } else {
+      clear(true, canvasEl);
+    }
+
+    updateUndo();
+  }
+}
+
+function updateUndo() {
+  const undoButton = document.querySelector('.undoButton');
+  if (undoButton) {
+    if (history.length === 0) {
+      undoButton.style.opacity = 0.5;
+      undoButton.disabled = true;
+    } else {
+      undoButton.style.opacity = 'unset';
+      undoButton.disabled = false;
+    }
+  }
+}
+
 function updateColor(newColor) {
   color = newColor;
 
@@ -326,8 +380,12 @@ function clear(resetPoints, canvasEl) {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (resetPoints) points = [];
+  if (resetPoints) {
+    points = [];
+    history = [];
+  }
 
+  updateUndo();
   updateStats();
 }
 

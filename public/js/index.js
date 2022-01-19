@@ -21,8 +21,12 @@ function init() {
   document.addEventListener('keydown', (e) => {
     switch (e.key) {
       case 'Escape':
-        hideModal();
-        hideFolderModal();
+        if (drawMode) {
+          toggleDrawing(false);
+        } else {
+          hideModal();
+          hideFolderModal();
+        }
         break;
       case 'Enter':
         const folderName = document.querySelector('.folderModal .newFolder .folderName');
@@ -162,8 +166,9 @@ function parseImages(res) {
       const img = currentImages[currentIndex];
       const mainCanvas = document.querySelector('.mainCanvas');
 
-      if (img.drawing) {
+      if (img.drawing && !drawMode) {
         points = parseDrawing(img.drawing);
+        history = [parseDrawing(img.drawing)];
         draw(mainCanvas);
       }
     }
@@ -304,6 +309,7 @@ function showModal() {
   mainCanvas.height = img.dimensions.height;
 
   points = parseDrawing(img.drawing);
+  history = [parseDrawing(img.drawing)];
   draw(mainCanvas);
 
   document.body.style.overflow = 'hidden';
@@ -391,12 +397,19 @@ function toggleDrawing(value) {
 
   const paletteEl = document.querySelector('.modal .paletteContainer');
   paletteEl.style.opacity = drawMode ? 1 : 0;
+  paletteEl.style.pointerEvents = drawMode ? 'unset' : 'none';
 
   const mainCanvas = document.querySelector('.mainCanvas');
   mainCanvas.style.cursor = drawMode ? 'none' : 'unset';
   mainCanvas.style.touchAction = drawMode ? 'none' : 'unset';
 
-  if (!drawMode && prevMode !== drawMode && points) postDrawing();
+  if (!drawMode && prevMode !== drawMode && points) {
+    postDrawing();
+
+    const drawButton = document.querySelector('.drawing');
+    drawButton.style.opacity = 0.5;
+    drawButton.disabled = true;
+  }
 }
 
 function postDrawing() {
@@ -418,7 +431,12 @@ function postDrawing() {
       .then(() => {
         updateImages();
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => {
+        const drawButton = document.querySelector('.drawing');
+        drawButton.style.opacity = 'unset';
+        drawButton.disabled = false;
+      });
   }
 }
 
