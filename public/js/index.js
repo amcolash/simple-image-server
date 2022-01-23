@@ -123,8 +123,14 @@ function parseImages(res) {
   const sortedImages = images.sort((a, b) => a.file.localeCompare(b.file));
   const sortedCurrentImages = currentImages.sort((a, b) => a.file.localeCompare(b.file));
 
+  const sortedDirs = Array.from(dirs).sort((a, b) => a.localeCompare(b));
+  const sortedCurrentDirs = currentDirs.sort((a, b) => a.localeCompare(b));
+
   // Only update dom if there were changes to image list
-  if (JSON.stringify(sortedImages) !== JSON.stringify(sortedCurrentImages)) {
+  if (
+    JSON.stringify(sortedImages) !== JSON.stringify(sortedCurrentImages) ||
+    JSON.stringify(sortedDirs) !== JSON.stringify(sortedCurrentDirs)
+  ) {
     root.replaceChildren();
     pager.replaceChildren();
     folders.replaceChildren();
@@ -245,8 +251,6 @@ function createImage(img, i) {
 
     draw(canvasEl, img.drawing);
   }
-
-  // console.log(pager.getBoundingClientRect());
 
   pagerWrapper.appendChild(pagerImg);
   pager.appendChild(pagerWrapper);
