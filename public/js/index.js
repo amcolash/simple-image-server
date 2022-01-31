@@ -393,8 +393,10 @@ function toggleDrawing(value) {
   if (value !== undefined) drawMode = value;
   else drawMode = !drawMode;
 
-  if (drawMode) hideUI();
-  else showUI();
+  if (drawMode) {
+    hideUI();
+    updateColor(color);
+  } else showUI();
 
   // const uiEls = document.querySelectorAll('.pager, .right, .left');
   // Array.from(uiEls).forEach((e) => (e.style.display = drawMode ? 'none' : 'unset'));

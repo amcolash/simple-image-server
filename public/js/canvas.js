@@ -8,7 +8,7 @@ let examplePage;
 let drawMode;
 
 const colors = ['#444444', '#ff6663', '#feb144', '#fdfd97', '#9ee09e', '#9ec1cf', '#cc99c9', '#eeeeee', 'transparent'];
-const defaultColor = colors[2];
+const defaultColor = colors[4];
 
 let lastX = -1;
 let lastY = -1;
@@ -20,7 +20,7 @@ let points = [];
 let history = [];
 let lastColor;
 
-let color = 'black';
+let color = defaultColor;
 
 function initCanvas(canvasEl) {
   examplePage = typeof currentImages === 'undefined';
@@ -126,11 +126,7 @@ function initCanvas(canvasEl) {
       if (lastX !== -1 && lastY !== -1) {
         points.push([lastX, lastY, lastPressure]);
         points.push([]);
-
-        history.push(JSON.parse(JSON.stringify(points)));
-        if (history.length > 30) history = history.slice(history.length - 30);
-
-        updateUndo();
+        addHistory();
       }
 
       lastX = -1;
@@ -147,6 +143,7 @@ function initCanvas(canvasEl) {
     if (lastX !== -1 && lastY !== -1) {
       points.push([lastX, lastY, lastPressure]);
       points.push([]);
+      addHistory();
     }
 
     lastX = -1;
@@ -162,7 +159,14 @@ function initCanvas(canvasEl) {
   if (redrawButton) redrawButton.addEventListener('click', () => draw);
 
   createPalette(canvas);
-  updateColor(defaultColor);
+  color = localStorage.getItem('drawing-color') || defaultColor;
+}
+
+function addHistory() {
+  history.push(JSON.parse(JSON.stringify(points)));
+  if (history.length > 30) history = history.slice(history.length - 30);
+
+  updateUndo();
 }
 
 function createPalette(canvasEl) {
@@ -357,12 +361,14 @@ function updateColor(newColor) {
   Array.from(colors).forEach((c) => {
     if (
       c.style.background.indexOf('rgb') === -1
-        ? c.style.background === newColor
+        ? c.style.background.toLowerCase() === newColor.toLowerCase()
         : '#' + rgbHex(c.style.background).toLowerCase() === newColor.toLowerCase()
     )
       c.style.outline = 'solid 3px #777';
     else c.style.outline = 'none';
   });
+
+  localStorage.setItem('drawing-color', color);
 }
 
 function updateStats() {
