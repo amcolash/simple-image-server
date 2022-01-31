@@ -49,7 +49,7 @@ function initCanvas(canvasEl) {
     let pressure = 1;
     if (e.pointerType === 'pen') {
       // Reduce the ballon-tail effect on drawing
-      const newPressure = Number.parseFloat(Math.min(1.75, Math.max(0.35, e.pressure * 3)).toFixed(2));
+      const newPressure = Number.parseFloat(Math.min(0.85, Math.max(0.35, e.pressure * 3)).toFixed(2));
       pressure = 0.25 * newPressure + 0.75 * lastPressure;
     }
 
@@ -326,7 +326,7 @@ function undo(canvasEl) {
     history.pop();
 
     if (history.length > 0) {
-      points = history[history.length - 1];
+      points = history[history.length - 1] || [];
       draw(canvasEl);
     } else {
       clear(true, canvasEl);

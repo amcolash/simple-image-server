@@ -464,9 +464,10 @@ function postDrawing() {
 function parseDrawing(raw) {
   if (raw) {
     try {
-      return JSON.parse(LZString.decompressFromUTF16(raw));
+      return JSON.parse(LZString.decompressFromUTF16(raw)) || [];
     } catch (err) {
       console.error(err);
+      return [];
     }
   }
 
