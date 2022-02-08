@@ -297,6 +297,8 @@ function createDir(d, label) {
 function showModal() {
   acquireWakelock();
 
+  toggleDrawing(false);
+
   const img = currentImages[currentIndex];
 
   const modal = document.querySelector('.modal');

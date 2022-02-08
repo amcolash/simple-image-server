@@ -153,6 +153,7 @@ function initCanvas(canvasEl) {
 
     const cursor = document.querySelector('#cursor');
     cursor.style.visibility = 'hidden';
+    cursor.style.transform = `translate(0, 0)`;
   });
 
   const redrawButton = document.querySelector('#redraw');
