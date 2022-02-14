@@ -1,5 +1,9 @@
-let markerSize = 4;
-let eraserSize = 9;
+// Base tool sizes in px, these are scaled for server images
+const baseMarkerSize = 4;
+const baseEraserSize = 9;
+
+let markerSize = baseMarkerSize;
+let eraserSize = baseEraserSize;
 
 const width = 500;
 const height = width;
@@ -33,12 +37,6 @@ function initCanvas(canvasEl) {
     canvas.height = height;
   }
 
-  if (!examplePage) {
-    const serverScalar = 2;
-    markerSize *= serverScalar;
-    eraserSize *= serverScalar;
-  }
-
   canvas.addEventListener('pointermove', (e) => {
     if (!e.isPrimary || !drawMode) return;
     if (e.pointerType !== lastType && Date.now() - lastTime < 1000) return;
@@ -61,6 +59,12 @@ function initCanvas(canvasEl) {
 
       canvasXRatio = img.dimensions.width / canvasSize.width;
       canvasYRatio = img.dimensions.height / canvasSize.height;
+
+      // Set tool sizes based on img width
+      const ratio = Math.min(Math.max(0.5, img.dimensions.width / 1920), 1.5);
+      const sizeScalar = ratio * 2;
+      markerSize = baseMarkerSize * sizeScalar;
+      eraserSize = baseEraserSize * sizeScalar;
     }
     let avgRatio = (canvasXRatio + canvasYRatio) / 2;
 
