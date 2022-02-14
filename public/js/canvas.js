@@ -186,7 +186,7 @@ function createPalette(canvasEl) {
     swatch.style.background = c;
     swatch.style.width = size + 'px';
     swatch.style.height = size + 'px';
-    swatch.style.margin = size / 5 + 'px';
+    swatch.style.margin = `${size / 5}px min(${size / 5}px, 1vw)`;
     swatch.style.position = 'relative';
     swatch.style.overflow = 'hidden';
 
@@ -210,6 +210,7 @@ function createPalette(canvasEl) {
   const spacer = document.createElement('div');
   spacer.style.borderLeft = '1px solid #777';
   spacer.style.margin = '4px 6px 4px 8px';
+  spacer.style.height = `${size / 1.15}px`;
   palette.appendChild(spacer);
 
   // Undo Button

@@ -403,9 +403,9 @@ function toggleDrawing(value) {
   // const uiEls = document.querySelectorAll('.pager, .right, .left');
   // Array.from(uiEls).forEach((e) => (e.style.display = drawMode ? 'none' : 'unset'));
 
-  const paletteEl = document.querySelector('.modal .paletteContainer');
+  const paletteEl = document.querySelector('.modal #palette');
   paletteEl.style.opacity = drawMode ? 1 : 0;
-  paletteEl.style.pointerEvents = drawMode ? 'unset' : 'none';
+  paletteEl.style.pointerEvents = drawMode ? 'auto' : 'none';
 
   const mainCanvas = document.querySelector('.mainCanvas');
   mainCanvas.style.cursor = drawMode ? 'none' : 'unset';
