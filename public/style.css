@@ -181,6 +181,7 @@ button {
   align-items: center;
   flex-direction: column;
   transition: opacity 0.25s;
+  opacity: 0;
   z-index: 3;
   pointer-events: none;
 }
@@ -208,7 +209,6 @@ button {
 .modal #sizeSlider {
   pointer-events: all;
   margin-top: 1em;
-  opacity: 0;
 }
 
 .modal .pagerContainer {
