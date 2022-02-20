@@ -205,6 +205,11 @@ button {
   box-shadow: 0 0 10px black;
 }
 
+.modal #sizeSlider {
+  pointer-events: all;
+  margin-bottom: 1em;
+}
+
 .modal .pagerContainer {
   position: absolute;
   bottom: 4px;
