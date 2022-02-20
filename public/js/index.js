@@ -407,6 +407,10 @@ function toggleDrawing(value) {
   paletteEl.style.opacity = drawMode ? 1 : 0;
   paletteEl.style.pointerEvents = drawMode ? 'auto' : 'none';
 
+  const containerEl = document.querySelector('.modal .paletteContainer');
+  containerEl.style.opacity = drawMode ? 1 : 0;
+  containerEl.style.pointerEvents = drawMode ? 'auto' : 'none';
+
   const mainCanvas = document.querySelector('.mainCanvas');
   mainCanvas.style.cursor = drawMode ? 'none' : 'unset';
   mainCanvas.style.touchAction = drawMode ? 'none' : 'unset';

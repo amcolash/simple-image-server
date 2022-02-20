@@ -174,7 +174,7 @@ button {
 
 .modal .paletteContainer {
   position: absolute;
-  bottom: 28px;
+  bottom: 14px;
   left: 0;
   width: 100%;
   display: flex;
@@ -207,7 +207,8 @@ button {
 
 .modal #sizeSlider {
   pointer-events: all;
-  margin-bottom: 1em;
+  margin-top: 1em;
+  opacity: 0;
 }
 
 .modal .pagerContainer {

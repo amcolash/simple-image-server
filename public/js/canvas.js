@@ -1,6 +1,6 @@
 // Base tool sizes in px, these are scaled for server images
-const baseMarkerSize = 4;
-const baseEraserSize = 9;
+const baseMarkerSize = 3;
+const baseEraserSize = 5.5;
 
 let markerSize = baseMarkerSize;
 let eraserSize = baseEraserSize;
@@ -60,11 +60,14 @@ function initCanvas(canvasEl) {
       canvasXRatio = img.dimensions.width / canvasSize.width;
       canvasYRatio = img.dimensions.height / canvasSize.height;
 
+      const inputEl = document.querySelector('#sizeSlider');
+      const inputScale = Number.parseInt(inputEl.value) * 0.75;
+
       // Set tool sizes based on img width
       const ratio = Math.min(Math.max(0.5, img.dimensions.width / 1920), 1.5);
       const sizeScalar = ratio * 2;
-      markerSize = baseMarkerSize * sizeScalar;
-      eraserSize = baseEraserSize * sizeScalar;
+      markerSize = baseMarkerSize * sizeScalar * inputScale;
+      eraserSize = baseEraserSize * sizeScalar * inputScale;
     }
     let avgRatio = (canvasXRatio + canvasYRatio) / 2;
 
