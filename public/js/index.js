@@ -100,8 +100,18 @@ function parseImages(res) {
 
   const savedPagerScroll = pager.scrollLeft;
 
-  // console.log(res);
+  // check if the dir is actually valid - if not, redirect back to the root
+  let isValidDir = false;
+  res.files.forEach((f) => {
+    if (f.dir === currentDir) isValidDir = true;
+  });
 
+  if (!isValidDir) {
+    currentDir = '.';
+    window.history.pushState({ currentDir }, currentDir, `?currentDir=${currentDir}`);
+  }
+
+  // filter files out based on if they match the current dir
   res.files.forEach((f) => {
     Object.entries(f).forEach((e) => {
       if (typeof e[1] === 'string') f[e[0]] = e[1].replace(/\\/g, '/');

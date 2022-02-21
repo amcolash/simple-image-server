@@ -14,6 +14,8 @@ const sharp = require('sharp');
 const sizeOf = require('image-size');
 const yargs = require('yargs');
 
+console.log('simple-image-server@' + require(join(__dirname, 'package.json')).version);
+
 const argv = yargs
   .usage('Usage: $0 [options] <folder>')
 
