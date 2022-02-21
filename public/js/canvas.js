@@ -1,9 +1,6 @@
 // Base tool sizes in px, these are scaled for server images
-const baseMarkerSize = 3;
-const baseEraserSize = 5.5;
-
-let markerSize = baseMarkerSize;
-let eraserSize = baseEraserSize;
+const markerSize = 4.5;
+const eraserSize = 9;
 
 const width = 500;
 const height = width;
@@ -45,9 +42,22 @@ function initCanvas(canvasEl) {
     lastType = e.pointerType;
 
     let pressure = 1;
-    if (e.pointerType === 'pen') {
+    if (e.pointerType === 'pen' && currentImages) {
       // Reduce the ballon-tail effect on drawing
-      const newPressure = Number.parseFloat(Math.min(1, Math.max(0.45, e.pressure * 3)).toFixed(2));
+      let newPressure = Number.parseFloat(Math.min(1, Math.max(0.45, e.pressure * 3)).toFixed(2));
+
+      // Set tool sizes based on img width
+      const img = currentImages[currentIndex];
+      const ratio = Math.min(Math.max(0.5, img.dimensions.width / 1920), 1.5);
+      const sizeScalar = ratio * 2;
+
+      // Add scalar from pen size slider
+      const inputEl = document.querySelector('#sizeSlider');
+      const inputScale = Number.parseInt(inputEl.value) * 0.75;
+
+      // Combine all of the value together
+      newPressure *= sizeScalar * inputScale;
+
       pressure = 0.25 * newPressure + 0.75 * lastPressure;
     }
 
@@ -59,15 +69,6 @@ function initCanvas(canvasEl) {
 
       canvasXRatio = img.dimensions.width / canvasSize.width;
       canvasYRatio = img.dimensions.height / canvasSize.height;
-
-      const inputEl = document.querySelector('#sizeSlider');
-      const inputScale = Number.parseInt(inputEl.value) * 0.75;
-
-      // Set tool sizes based on img width
-      const ratio = Math.min(Math.max(0.5, img.dimensions.width / 1920), 1.5);
-      const sizeScalar = ratio * 2;
-      markerSize = baseMarkerSize * sizeScalar * inputScale;
-      eraserSize = baseEraserSize * sizeScalar * inputScale;
     }
     let avgRatio = (canvasXRatio + canvasYRatio) / 2;
 

@@ -189,8 +189,7 @@ server.listen(port, () => {
   generateThumbs();
 });
 
-const options = {};
-// const options = { maxAge: 60 * 60 * 1000 };
+const options = { maxAge: 60 * 60 * 1000 };
 
 app.use(express.static(join(__dirname, 'public')));
 app.use('/chooser', express.static(join(__dirname, 'chooser')));
@@ -313,6 +312,13 @@ if (write) {
           const source = join(dir, f);
           const destDir = join(dir, req.body.destination);
           const dest = join(destDir, basename(f));
+
+          if (data.drawings[f]) {
+            const drawingLocation = join(req.body.destination, basename(f));
+            data.drawings[drawingLocation] = data.drawings[f];
+            data.drawings[f] = undefined;
+            saveData();
+          }
 
           if (!existsSync(destDir)) {
             console.log(`Destination does not exist, making new directory ${destDir}`);

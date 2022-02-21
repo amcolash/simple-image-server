@@ -225,6 +225,7 @@ function createImage(img, i) {
   div.appendChild(imgEl);
   imgEl.src = img.thumb;
 
+  // Draw main image canvas drawing
   if (img.drawing) {
     const canvasEl = document.createElement('canvas');
     canvasEl.width = img.dimensions.width;
@@ -253,6 +254,7 @@ function createImage(img, i) {
     showModal();
   };
 
+  // Draw pager canvas drawing
   if (img.drawing) {
     const canvasEl = document.createElement('canvas');
     canvasEl.width = img.dimensions.width;
@@ -435,6 +437,8 @@ function toggleDrawing(value) {
 }
 
 function postDrawing() {
+  clearTimeout(updateTimer);
+
   const raw = JSON.stringify(points);
   const compressed = LZString.compressToUTF16(raw);
   const img = currentImages[currentIndex];
