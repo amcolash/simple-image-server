@@ -15,8 +15,7 @@ function init() {
   updateImages();
 
   const params = new URLSearchParams(window.location.search);
-  currentDir = params.get('currentDir') || '.';
-  selectDir(currentDir);
+  selectDir(params.get('currentDir') || '.');
 
   document.addEventListener('keydown', (e) => {
     switch (e.key) {
@@ -106,10 +105,10 @@ function parseImages(res) {
     if (f.dir === currentDir) isValidDir = true;
   });
 
-  if (!isValidDir) {
-    currentDir = '.';
-    window.history.pushState({ currentDir }, currentDir, `?currentDir=${currentDir}`);
-  }
+  // if (!isValidDir) {
+  //   currentDir = '.';
+  //   window.history.pushState({ currentDir }, currentDir, `?currentDir=${currentDir}`);
+  // }
 
   // filter files out based on if they match the current dir
   res.files.forEach((f) => {

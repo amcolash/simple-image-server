@@ -53,7 +53,7 @@ function initCanvas(canvasEl) {
 
       // Add scalar from pen size slider
       const inputEl = document.querySelector('#sizeSlider');
-      const inputScale = Number.parseInt(inputEl.value) * 0.75;
+      const inputScale = Number.parseInt(inputEl.value) * 0.5;
 
       // Combine all of the value together
       newPressure *= sizeScalar * inputScale;
