@@ -1,5 +1,5 @@
 const server = window.location.origin;
-const refreshTime = 1 * 60 * 1000;
+const refreshTime = 60 * 1000;
 
 let currentDir = '.';
 let currentImages = [];
@@ -47,6 +47,10 @@ function init() {
     currentDir = params.get('currentDir') || '.';
     selectDir(currentDir, true);
   });
+
+  window.onbeforeunload = () => {
+    if (drawMode) return 'Exit Draw Mode?';
+  };
 
   document.addEventListener('visibilitychange', () => {
     if (wakeLock && document.visibilityState === 'visible') acquireWakelock();
@@ -409,7 +413,11 @@ function toggleDrawing(value) {
   if (drawMode) {
     hideUI();
     updateColor(color);
-  } else showUI();
+  } else {
+    showUI();
+
+    backupPoints = JSON.parse(JSON.stringify(points));
+  }
 
   // const uiEls = document.querySelectorAll('.pager, .right, .left');
   // Array.from(uiEls).forEach((e) => (e.style.display = drawMode ? 'none' : 'unset'));

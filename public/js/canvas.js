@@ -18,6 +18,7 @@ let lastType;
 let lastPressure = 1;
 
 let points = [];
+let backupPoints = [];
 let history = [];
 let lastColor;
 
@@ -175,7 +176,7 @@ function addHistory() {
   history.push(JSON.parse(JSON.stringify(points)));
   if (history.length > 30) history = history.slice(history.length - 30);
 
-  updateUndo();
+  updateButtons();
 }
 
 function createPalette(canvasEl) {
@@ -215,67 +216,52 @@ function createPalette(canvasEl) {
     palette.appendChild(swatch);
   });
 
+  addSpacer(palette, size);
+
+  const undoButton = createButton('undoButton', 'img/rotate-ccw.svg', size, () => undo(canvasEl));
+  palette.appendChild(undoButton);
+
+  const resetButton = createButton('resetButton', 'img/trash-2.svg', size, () => {
+    if (confirm('Are you sure you want to clear the drawing?')) clear(true, canvasEl);
+  });
+  palette.appendChild(resetButton);
+
+  const revertButton = createButton('revertButton', 'img/clipboard.svg', size, () => {
+    if (confirm('Are you sure you want to revert the drawing?')) revert(canvasEl);
+  });
+  palette.appendChild(revertButton);
+
+  addSpacer(palette, size);
+
+  const closeButton = createButton('closeButton', 'img/save.svg', size, () => toggleDrawing(false));
+  palette.appendChild(closeButton);
+}
+
+function addSpacer(parent, size) {
   const spacer = document.createElement('div');
   spacer.style.borderLeft = '1px solid #777';
   spacer.style.margin = '4px 6px 4px 8px';
   spacer.style.height = `${size / 1.15}px`;
-  palette.appendChild(spacer);
+  parent.appendChild(spacer);
+}
 
-  // Undo Button
-  const undoButton = document.createElement('button');
-  undoButton.className = 'undoButton';
-  undoButton.style.background = 'none';
-  undoButton.style.border = 'none';
+function createButton(className, iconSrc, size, cb) {
+  const button = document.createElement('button');
+  button.className = className;
+  button.style.background = 'none';
+  button.style.border = 'none';
 
-  undoButton.addEventListener('click', () => undo(canvasEl));
+  button.addEventListener('click', cb);
 
-  const undoIcon = document.createElement('img');
-  undoIcon.src = 'img/rotate-ccw.svg';
-  undoIcon.style.width = size + 'px';
-  undoIcon.style.height = size + 'px';
+  const icon = document.createElement('img');
+  icon.src = iconSrc;
+  icon.style.width = size + 'px';
+  icon.style.height = size + 'px';
 
-  SVGInject(undoIcon);
+  SVGInject(icon);
+  button.appendChild(icon);
 
-  undoButton.appendChild(undoIcon);
-  palette.appendChild(undoButton);
-
-  // Reset Button
-  const resetButton = document.createElement('button');
-  resetButton.className = 'resetButton';
-  resetButton.style.background = 'none';
-  resetButton.style.border = 'none';
-
-  resetButton.addEventListener('click', () => {
-    if (confirm('Are you sure you want to clear the drawing?')) clear(true, canvasEl);
-  });
-
-  const resetIcon = document.createElement('img');
-  resetIcon.src = 'img/trash-2.svg';
-  resetIcon.style.width = size + 'px';
-  resetIcon.style.height = size + 'px';
-
-  SVGInject(resetIcon);
-
-  resetButton.appendChild(resetIcon);
-  palette.appendChild(resetButton);
-
-  // Close Button
-  const close = document.createElement('button');
-  close.className = 'closeButton';
-  close.style.background = 'none';
-  close.style.border = 'none';
-
-  close.addEventListener('click', () => toggleDrawing(false));
-
-  const closeIcon = document.createElement('img');
-  closeIcon.src = 'img/save.svg';
-  closeIcon.style.width = size + 'px';
-  closeIcon.style.height = size + 'px';
-
-  SVGInject(closeIcon);
-
-  close.appendChild(closeIcon);
-  palette.appendChild(close);
+  return button;
 }
 
 function draw(canvasEl, pointString) {
@@ -346,21 +332,26 @@ function undo(canvasEl) {
       clear(true, canvasEl);
     }
 
-    updateUndo();
+    updateButtons();
   }
 }
 
-function updateUndo() {
-  const undoButton = document.querySelector('.undoButton');
-  if (undoButton) {
-    if (history.length === 0) {
-      undoButton.style.opacity = 0.5;
-      undoButton.disabled = true;
-    } else {
-      undoButton.style.opacity = 'unset';
-      undoButton.disabled = false;
-    }
+function setEnabled(button, enabled) {
+  if (enabled) {
+    button.style.opacity = 'unset';
+    button.disabled = false;
+  } else {
+    button.style.opacity = 0.5;
+    button.disabled = true;
   }
+}
+
+function updateButtons() {
+  const undoButton = document.querySelector('.undoButton');
+  if (undoButton) setEnabled(undoButton, history.length > 0);
+
+  const revertButton = document.querySelector('.revertButton');
+  if (revertButton) setEnabled(revertButton, backupPoints.length > 0);
 }
 
 function updateColor(newColor) {
@@ -401,8 +392,14 @@ function clear(resetPoints, canvasEl) {
     history = [];
   }
 
-  updateUndo();
+  updateButtons();
   updateStats();
+}
+
+function revert(canvasEl) {
+  points = backupPoints || [];
+  draw(canvasEl);
+  updateButtons();
 }
 
 function lerp(v0, v1, t) {
