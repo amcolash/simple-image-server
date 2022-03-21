@@ -25,21 +25,32 @@ const argv = yargs
   .nargs('p', 1)
   .number('p')
   .describe('p', 'Specify a port')
+  .default('p', 8000)
 
-  .alias('w', 'write-access')
-  .nargs('w', 0)
-  .boolean('w')
-  .describe('w', 'Allow write access to directory (screenshot, delete, move)')
+  .alias('a', 'address')
+  .nargs('a', 1)
+  .string('a')
+  .describe('a', 'Host address to listen to')
+  .default('a', '127.0.0.1')
 
   .alias('c', 'cert')
   .nargs('c', 1)
   .string('c')
-  .describe('c', 'Certificate path')
+  .describe('c', 'HTTPS Certificate path')
 
   .alias('k', 'key')
   .nargs('k', 1)
   .string('k')
-  .describe('k', 'Private key path')
+  .describe('k', 'HTTPS Private key path')
+
+  .alias('w', 'write-access')
+  .nargs('w', 0)
+  .boolean('w')
+  .describe(
+    'w',
+    'Allow write access to hosted directory (enables options such as screenshots, drawings, creating folders, moving and deleting images)'
+  )
+  .default('w', false)
 
   .demand(1)
   .wrap(100)
@@ -47,8 +58,9 @@ const argv = yargs
   .help('h')
   .alias('h', 'help').argv;
 
-const port = argv.p || 8000;
-const write = argv.w || false;
+const port = argv.p;
+const write = argv.w;
+const host = argv.a;
 const tmp = join(os.tmpdir(), 'simple-image-server');
 
 let dir = argv._[0];
@@ -181,10 +193,10 @@ if (creds) {
   server = http.createServer(app);
 }
 
-server.listen(port, () => {
+server.listen(port, host, () => {
   console.log(`Serving images in ${dir}`);
   console.log(`Write access is ${write ? 'enabled' : 'disabled'}`);
-  console.log(`Server listening at ${creds ? 'https' : 'http'}://localhost:${port}`);
+  console.log(`Server listening at ${creds ? 'https' : 'http'}://${host}:${port}`);
 
   generateThumbs();
 });
