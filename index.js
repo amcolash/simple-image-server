@@ -80,6 +80,7 @@ try {
 const defaultData = { drawings: {} };
 let data = JSON.parse(JSON.stringify(defaultData));
 const dataFile = join(dir, 'data.json');
+const cachedDims = {};
 
 loadData();
 
@@ -133,7 +134,10 @@ function getImages() {
   const images = {
     files: getFiles().map((f) => {
       const rel = relative(dir, f);
-      const dimensions = sizeOf(f);
+
+      // Cache dimensions for performance
+      const dimensions = cachedDims[f] || sizeOf(f);
+      cachedDims[f] = dimensions;
 
       return {
         file: join('/images/', rel),
