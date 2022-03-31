@@ -130,7 +130,7 @@ button {
 }
 
 #cursor {
-  outline: 1px solid black;
+  outline: 2px solid black;
   border-radius: 100%;
   visibility: hidden;
   position: absolute;
