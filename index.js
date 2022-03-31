@@ -100,6 +100,14 @@ function generateThumbs(overwrite) {
     }
   });
 
+  Object.keys(data.drawings).forEach((d) => {
+    if (!existsSync(join(dir, d))) {
+      delete data.drawings[d];
+    }
+  });
+
+  saveData();
+
   return Promise.all(promises).catch((err) => {
     console.error(err);
   });
@@ -326,7 +334,7 @@ if (write) {
           const dest = join(destDir, basename(f));
 
           if (data.drawings[f]) {
-            const drawingLocation = join(req.body.destination, basename(f));
+            const drawingLocation = join(req.body.destination, basename(f)).replace(/\\/g, '/');
             data.drawings[drawingLocation] = data.drawings[f];
             data.drawings[f] = undefined;
             saveData();

@@ -177,10 +177,6 @@ function parseImages(res) {
       if (selected.indexOf(i) !== -1) c.checked = true;
     });
 
-    // Toggle write mode class based on if the server supports it or not
-    const realRoot = document.querySelector('.realRoot');
-    realRoot.classList.toggle('write', res.write);
-
     if (currentIndex !== -1 && currentImages[currentIndex]) {
       const img = currentImages[currentIndex];
       const mainCanvas = document.querySelector('.mainCanvas');
@@ -207,9 +203,21 @@ function parseImages(res) {
         } else e.style.outlineColor = 'unset';
       });
     });
-
-    updateCheckboxes();
   }
+
+  // Toggle write mode class based on if the server supports it or not
+  const realRoot = document.querySelector('.realRoot');
+  realRoot.classList.toggle('write', res.write);
+
+  if (res.files.length === 0) {
+    const noFiles = document.createElement('div');
+    noFiles.innerHTML = `No files found in directory "${currentDir}"`;
+
+    root.replaceChildren();
+    root.appendChild(noFiles);
+  }
+
+  updateCheckboxes();
 }
 
 function createImage(img, i) {
