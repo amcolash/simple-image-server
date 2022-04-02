@@ -103,6 +103,7 @@ function generateThumbs(overwrite) {
 
   Object.keys(data.drawings).forEach((d) => {
     if (!existsSync(join(dir, d))) {
+      console.log(`Removing missing drawing ${d}`);
       delete data.drawings[d];
     }
   });
