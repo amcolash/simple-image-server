@@ -3,7 +3,18 @@
 const compression = require('compression');
 const cors = require('cors');
 const express = require('express');
-const { existsSync, mkdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFile, writeFileSync } = require('fs');
+const {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  statSync,
+  unlinkSync,
+  writeFile,
+  writeFileSync,
+  copyFileSync,
+  copyFile,
+} = require('fs');
 const { getAllFilesSync } = require('get-all-files');
 const https = require('https');
 const http = require('http');
@@ -171,11 +182,18 @@ function loadData() {
 
 function saveData(sync) {
   try {
-    if (sync) writeFileSync(dataFile, JSON.stringify(data));
-    else
-      writeFile(dataFile, JSON.stringify(data), (err) => {
+    if (sync) {
+      copyFileSync(dataFile, dataFile + '_backup');
+      writeFileSync(dataFile, JSON.stringify(data));
+    } else {
+      copyFile(dataFile, dataFile + '_backup', (err) => {
         if (err) console.error(err);
+
+        writeFile(dataFile, JSON.stringify(data), (err) => {
+          if (err) console.error(err);
+        });
       });
+    }
   } catch (err) {
     console.error(err);
   }
